@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="google-site-verification" content="TUBi6xTFf23UYii6oMmOaSj-DRsPRPsgWL4_IAmncho" />
+<link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0384c6">
 <title>Plan du réseau TER – Provence-Alpes-Côte d'Azur</title>
 <style>
 :root{
@@ -181,6 +186,65 @@ ul.zl li:last-child{border-bottom:0}
 .bl{flex:none;min-width:68px;text-align:center;padding:3px 8px;border-radius:7px;font-weight:800;font-size:12.5px;background:rgba(3,132,198,.14);color:#0369a1}
 .bl.ex{background:rgba(245,158,11,.2);color:#b45309}
 @media(prefers-color-scheme:dark){.bl{color:#7cc7f2}.bl.ex{color:#fbbf6a}.zou h3{color:#4fb4ea;border-color:#4fb4ea}}
+
+/* ===== boutons d'en-tête (TGV / incidents) ===== */
+.hdbtn{position:relative}
+.hdbtn .cnt{position:absolute;top:-6px;right:-6px;background:#e11d48;color:#fff;font-size:11px;font-weight:800;min-width:19px;height:19px;border-radius:10px;display:none;place-items:center;padding:0 5px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#tgvbtn svg{color:#7b2f9e}#incbtn svg{color:#e11d48}
+#tgvbtn.on{border-color:#7b2f9e}#incbtn.on{border-color:#e11d48}
+@media(max-width:520px){.hdbtn span.t{display:none}}
+
+/* types de train */
+.bd-ty b[class*="k-"]{padding:1px 5px;border-radius:4px;color:#fff}
+.bd-ty b[class*="k-"]::before{display:none}
+.bd-ty b.k-INOUI{background:#6b2fa3}.bd-ty b.k-OUIGO{background:#e6007e}.bd-ty b.k-TGV{background:#2b3a6b}.bd-ty b.k-INTERCITÉS{background:#0f7b6c}
+.bd-ty b.k-{padding:0;background:none}.bd-ty b.k-::before{display:block}
+.bd-tag{display:inline-block;background:#fff;color:#c2410c;font-weight:800;font-size:11px;padding:1px 6px;border-radius:5px;margin-right:6px;text-transform:uppercase;vertical-align:1px}
+.bd-tag.s-hi{color:#b91c1c}.bd-tag.s-lo{color:#a16207}
+
+/* panneau TGV */
+.tgv-h{flex:1;background:linear-gradient(135deg,#3b1d6e,#7b2f9e 60%,#e6007e);color:#fff;border-radius:14px;padding:13px 16px;margin:8px 0 4px}
+.tgv-h b{display:block;font-size:18px;letter-spacing:-.01em}.tgv-h small{opacity:.92;font-size:12.5px}
+.tgv-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 2px}
+#tgvsel{flex:1;min-width:180px;height:42px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);color:var(--ink);font:inherit;font-weight:650;padding:0 10px}
+.tgv-k{display:flex;gap:6px}
+.tgv-kb{height:42px;padding:0 14px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);font-weight:750;font-size:13px;cursor:pointer}
+.tgv-kb.on{color:#fff;border-color:transparent;background:#2b3a6b}
+.tgv-kb.on.k-INOUI{background:#6b2fa3}.tgv-kb.on.k-OUIGO{background:#e6007e}
+
+/* incidents */
+.inc-h{flex:1;background:linear-gradient(135deg,#9f1239,#e11d48);color:#fff;border-radius:14px;padding:13px 16px;margin:8px 0 4px}
+.inc-h b{display:block;font-size:18px}.inc-h small{opacity:.92;font-size:12.5px}
+.inc-i{border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin:9px 0;background:var(--chip)}
+.inc-t{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}.inc-t b{font-size:14.5px;line-height:1.3}
+.inc-e{flex:none;font-size:11px;font-weight:800;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:#fde68a;color:#78350f}
+.inc-e.e-hi{background:#fecaca;color:#7f1d1d}
+.inc-i p{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:var(--ink)}
+.inc-s{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.inc-sb{border:1px solid var(--bd);background:var(--panel);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:650;cursor:pointer}
+.inc-n{margin-top:6px;font-size:12px;color:var(--muted)}
+.inc-ok{margin:14px 0 4px;font-weight:700;color:#15803d}
+.zlogo{width:46px;height:46px;border-radius:11px;flex:none;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.zou-h{display:flex;align-items:center;gap:12px}
+
+/* ===== grand écran : fiche latérale agrandie ===== */
+@media(min-width:900px){
+  #sheet{left:16px;top:132px;bottom:16px;max-width:none;width:clamp(540px,38vw,720px);max-height:none;padding:8px 24px 22px}
+  .sh-h h2{font-size:25px}
+  .bd-tab{height:48px;font-size:16px}
+  .bd-day{font-size:14px;padding:7px 16px}
+  .bd-r{grid-template-columns:84px 96px 1fr;min-height:72px;padding:10px 14px;gap:12px}
+  .bd-ty b{font-size:12.5px}.bd-ty i{font-size:18px}
+  .bd-t{font-size:32px}
+  .bd-d strong{font-size:27px}.bd-d em{font-size:16px}
+  .bd-side{width:48px}.bd-side span{font-size:36px}.bd-body{padding-right:48px}
+  .bd-f{height:40px;font-size:18px;padding:0 12px}.bd-clk{font-size:19px;line-height:28px}
+  .bd-more{height:44px;font-size:15px}
+  .bd-note{font-size:13px}
+  .nb li,.st li{font-size:15px}
+}
+@media(min-width:700px){header{max-width:860px}}
+@media(min-width:1500px){#sheet{width:clamp(620px,36vw,780px)}}
 </style>
 </head>
 <body>
@@ -201,7 +265,9 @@ ul.zl li:last-child{border-bottom:0}
         <input id="q" type="search" placeholder="Rechercher une gare" autocomplete="off" aria-label="Rechercher une gare">
         <div id="res"></div>
       </div>
-      <button class="busbtn" id="busbtn" aria-label="Bus Alpes-Maritimes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v2.5M16 17v2.5"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/></svg><span>Bus 06</span></button>
+      <button class="busbtn hdbtn" id="busbtn" aria-label="Bus Alpes-Maritimes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v2.5M16 17v2.5"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/></svg><span class="t">Bus 06</span></button>
+      <button class="busbtn hdbtn" id="tgvbtn" aria-label="TGV INOUI et OUIGO"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M6 11h12M8 21l2-2M16 21l-2-2"/><circle cx="9" cy="15" r=".7" fill="currentColor"/><circle cx="15" cy="15" r=".7" fill="currentColor"/></svg><span class="t">TGV</span></button>
+      <button class="busbtn hdbtn" id="incbtn" aria-label="Incidents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span class="t">Incidents</span><i class="cnt" id="incn"></i></button>
     </div>
     <div class="chips" id="chips"></div>
   </header>
@@ -262,7 +328,7 @@ S('vey','Veynes-Dévoluy',771,817,'b',{major:1});
 S('gap','Gap',833,817,'t',{major:1});
 row([['cho','Chorges'],['emb','Embrun'],['mdg','Mont-Dauphin - Guillestre'],['arg',"L'Argentière-les-Écrins"]],863,817,936,817,'u');
 S('brc','Briançon',966,817,'b',{major:1});
-S('asp','Aspes-sur-Buëch',771,772,'r');
+S('asp','Aspes-sur-Buëch',771,772,'l');
 T('ter','Valence / Grenoble',771,665,0,-1);
 
 /* Marseille – Toulon – Les Arcs */
@@ -345,6 +411,23 @@ const NS='http://www.w3.org/2000/svg';
 const E=new Map();
 LINES.forEach(L=>{for(let i=0;i<L.nodes.length-1;i++){let a=L.nodes[i],b=L.nodes[i+1];if(a>b)[a,b]=[b,a];const k=a+'|'+b;let e=E.get(k);if(!e){e={k,a,b,ls:[]};E.set(k,e)}if(!e.ls.includes(L.id))e.ls.push(L.id)}});
 
+
+/* placement d'une étiquette : 8 positions possibles autour de la gare */
+function place(n,mode){
+  const d=n.major?16:10;
+  switch(mode){
+    case 'l':return{x:n.x-d-3,y:n.y+(n.major?7:4),a:'end',r:0};
+    case 't':return{x:n.x,y:n.y-d-5,a:'middle',r:0};
+    case 'b':return{x:n.x,y:n.y+d+(n.major?18:14),a:'middle',r:0};
+    case 'u':return{x:n.x+5,y:n.y-d-1,a:'start',r:-45};
+    case 'dn':return{x:n.x+9,y:n.y+d+8,a:'end',r:-45};
+    case 'd':return{x:n.x+6,y:n.y+d+5,a:'start',r:45};
+    case 'ul':return{x:n.x-6,y:n.y-d-1,a:'end',r:45};
+    case 'v':return{x:n.x+4,y:n.y-d-1,a:'start',r:-90};
+    case 'w':return{x:n.x-4,y:n.y+d+1,a:'start',r:90};
+    default:return{x:n.x+d+3,y:n.y+(n.major?7:4),a:'start',r:0};
+  }
+}
 (function build(){
   let cas='',str='',hit='',stn='',lab='';
   E.forEach(e=>{
@@ -360,16 +443,8 @@ LINES.forEach(L=>{for(let i=0;i<L.nodes.length-1;i++){let a=L.nodes[i],b=L.nodes
     if(n.t==1){
       const r=n.major?10:6.3,sw=n.major?4.2:3.2;
       stn+=`<g class="stn" data-id="${n.id}"><title>${n.name}</title><circle class="ring" cx="${n.x}" cy="${n.y}" r="${r+7}"/><circle class="hitc" cx="${n.x}" cy="${n.y}" r="${r+9}" fill="transparent"/><circle class="dot" cx="${n.x}" cy="${n.y}" r="${r}" stroke-width="${sw}"/></g>`;
-      const d=n.major?16:10;let tx,ty,anc='start',tr='';
-      switch(n.lab){
-        case 'r':tx=n.x+d+3;ty=n.y+(n.major?7:4);break;
-        case 'l':tx=n.x-d-3;ty=n.y+(n.major?7:4);anc='end';break;
-        case 't':tx=n.x;ty=n.y-d-5;anc='middle';break;
-        case 'b':tx=n.x;ty=n.y+d+(n.major?18:14);anc='middle';break;
-        case 'u':tx=n.x+5;ty=n.y-d-1;tr=` transform="rotate(-45 ${tx} ${ty})"`;break;
-        case 'dn':tx=n.x+9;ty=n.y+d+8;anc='end';tr=` transform="rotate(-45 ${tx} ${ty})"`;break;
-      }
-      lab+=`<text class="lab ${n.major?'major':'minor'}" data-id="${n.id}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${anc}"${tr}>${n.name}${n.air?' ✈':''}</text>`;
+      const P=place(n,n.lab),tx=P.x,ty=P.y,anc=P.a,tr=P.r?` transform="rotate(${P.r} ${tx} ${ty})"`:'';
+      lab+=`<text class="lab ${n.major?'major':'minor'}" data-id="${n.id}" data-m="${n.lab}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${anc}"${tr}>${n.name}${n.air?' ✈':''}</text>`;
     }else if(n.t==2){
       const tipx=n.x+n.dx*38,tipy=n.y+n.dy*38,bx=n.x+n.dx*8,by=n.y+n.dy*8,px=-n.dy*16,py=n.dx*16;
       stn+=`<g class="stn term" data-id="${n.id}"><title>${n.name}</title><polygon points="${tipx},${tipy} ${bx+px},${by+py} ${bx-px},${by-py}" fill="#f39200"/></g>`;
@@ -381,21 +456,99 @@ LINES.forEach(L=>{for(let i=0;i<L.nodes.length-1;i++){let a=L.nodes[i],b=L.nodes
   vp.innerHTML=`<g>${cas}</g><g>${str}</g><g>${hit}</g><g>${stn}</g><g>${lab}</g>`;
 })();
 
+
+/* ===== anti-chevauchement des étiquettes (placement automatique, plusieurs passes) ===== */
+function layoutLabels(){
+  const wasZm=svg.classList.contains('zm');svg.classList.add('zm');
+  const boxes=(x,y,a,r,L,fs)=>{ // petites cases le long du texte (gère le texte penché)
+    const th=r*Math.PI/180,ux=Math.cos(th),uy=Math.sin(th),nx=Math.sin(th),ny=-Math.cos(th),hh=fs*.85;
+    const s0=a==='end'?-L:a==='middle'?-L/2:0,out=[];
+    for(let s=s0+hh/2;s<s0+L+hh/2;s+=hh*.8)out.push([x+ux*s+nx*fs*.33,y+uy*s+ny*fs*.33]);
+    return {pts:out,hh};
+  };
+  const hit=(A,B)=>{let c=0;
+    for(const p of A.pts)for(const q of B.pts){const t=(A.hh+B.hh)/2+1;if(Math.abs(p[0]-q[0])<t&&Math.abs(p[1]-q[1])<t)c++}
+    return c};
+  const obst=[];
+  Object.values(N).forEach(n=>{
+    if(n.t==1)obst.push({x:n.x,y:n.y,r:(n.major?10:6.3)+4,own:n.id});
+    else if(n.t==2)for(let k=0;k<=4;k++)obst.push({x:n.x+n.dx*k*9,y:n.y+n.dy*k*9,r:16});
+  });
+  const line=[];
+  E.forEach(e=>{const A=N[e.a],B=N[e.b],len=Math.hypot(B.x-A.x,B.y-A.y);
+    for(let s=0;s<=len;s+=9){const f=len?s/len:0;line.push({x:A.x+(B.x-A.x)*f,y:A.y+(B.y-A.y)*f,r:e.w/2+2,a:e.a,b:e.b})}});
+  const obstScore=(B,id)=>{let c=0;
+    for(const o of obst){if(o.own===id)continue;for(const p of B.pts)if(Math.abs(p[0]-o.x)<B.hh/2+o.r&&Math.abs(p[1]-o.y)<B.hh/2+o.r){c++;break}}
+    return c};
+  const lineScore=(B,id)=>{let c=0;
+    for(const o of line){if(o.a===id||o.b===id){const nn=N[id];if(Math.hypot(o.x-nn.x,o.y-nn.y)<14)continue}
+      for(const p of B.pts)if(Math.abs(p[0]-o.x)<B.hh/2+o.r&&Math.abs(p[1]-o.y)<B.hh/2+o.r){c++;break}}
+    return c};
+  const els=[...vp.querySelectorAll('text.lab')];
+  const terms=els.filter(e=>!e.dataset.id).map(el=>boxes(+el.getAttribute('x'),+el.getAttribute('y'),el.getAttribute('text-anchor'),0,el.getComputedTextLength(),17));
+  const modesMaj='r l t b'.split(' '),modesMin='r l u dn t b d ul v w'.split(' ');
+  // mesure unique de chaque variante de texte (complet, court, tronqué)
+  const infos=els.filter(e=>e.dataset.id).map(el=>{
+    const n=N[el.dataset.id],full=el.textContent,air=n.air?' ✈':'',base=n.name.split(' - ')[0];
+    const vs=[full];if(!n.major){if(base+air!==full)vs.push(base+air);if(base.length>15)vs.push(base.slice(0,14)+'…'+air)}
+    const variants=vs.map(t=>{el.textContent=t;return{t,L:el.getComputedTextLength()}});
+    el.textContent=full;
+    return{el,n,fs:n.major?19:12,variants,cands:[n.lab,...(n.major?modesMaj:modesMin).filter(m=>m!==n.lab)]};
+  });
+  const pass=order=>{
+    const placed=terms.slice(),res=new Map(),bad=[];
+    order.forEach(I=>{
+      const {n,fs,variants,cands}=I;
+      const score=(m,L)=>{const P=place(n,m),B=boxes(P.x,P.y,P.a,P.r,L,fs);let s=0;
+        for(const q of placed)s+=hit(B,q)*100;
+        s+=obstScore(B,n.id)*100+lineScore(B,n.id)*6+(P.r?1:0)+B.pts.filter(p=>p[0]<24||p[0]>1990||p[1]<238||p[1]>1146).length*100;return{m,P,B,s}};
+      let best=null,bv=0;
+      variants.forEach((v,vi)=>{
+        if(best&&best.s<100)return;
+        let b=score(cands[0],v.L);
+        if(b.s>0)for(const m of cands.slice(1)){const c=score(m,v.L);if(c.s<b.s)b=c;if(b.s<=1)break}
+        if(!best||b.s<best.s){best=b;bv=vi}
+      });
+      placed.push(best.B);res.set(n.id,{best,bv});if(best.s>=100)bad.push(I);
+    });
+    return{res,bad};
+  };
+  let order=[...infos.filter(I=>I.n.major),...infos.filter(I=>!I.n.major)],bestRun=null;
+  for(let it=0;it<10;it++){
+    const r=pass(order);
+    if(!bestRun||r.bad.length<bestRun.bad.length)bestRun=r;
+    if(!r.bad.length)break;
+    const bad=new Set(r.bad);   // les étiquettes en conflit passent en premier à la passe suivante
+    order=[...r.bad,...order.filter(I=>!bad.has(I))];
+  }
+  infos.forEach(I=>{
+    const {best,bv}=bestRun.res.get(I.n.id),P=best.P,el=I.el;
+    el.textContent=I.variants[bv].t;if(bv)el.dataset.short='1';
+    el.setAttribute('x',P.x.toFixed(1));el.setAttribute('y',P.y.toFixed(1));el.setAttribute('text-anchor',P.a);
+    if(P.r)el.setAttribute('transform',`rotate(${P.r} ${P.x.toFixed(1)} ${P.y.toFixed(1)})`);else el.removeAttribute('transform');
+    el.dataset.m=best.m;
+  });
+  window.__lab={unresolved:bestRun.bad.map(I=>I.n.id)};
+  if(!wasZm)svg.classList.remove('zm');
+}
+layoutLabels();
+
 /* ---- pan / zoom ---- */
 let T0={k:1,x:0,y:0},fitK=.5;
 const TT=T0;
-const BND={x0:30,y0:225,x1:1880,y1:1150};
+const BND={x0:30,y0:228,x1:1960,y1:1150};
 function apply(){
   vp.setAttribute('transform',`translate(${TT.x.toFixed(1)} ${TT.y.toFixed(1)}) scale(${TT.k.toFixed(4)})`);
-  svg.classList.toggle('zm',TT.k>=.95);
+  svg.classList.toggle('zm',TT.k>=.8);
   svg.classList.toggle('zl',TT.k>=.5);
 }
 function fit(){
-  const r=stage.getBoundingClientRect();
-  fitK=Math.min(r.width/(BND.x1-BND.x0),r.height/(BND.y1-BND.y0));
+  const r=stage.getBoundingClientRect(),hd=document.querySelector('header').getBoundingClientRect();
+  const top=Math.max(0,hd.bottom-r.top)+8,bot=innerWidth<700?30:36,side=14,aw=r.width-2*side,ah=r.height-top-bot;
+  fitK=Math.min(aw/(BND.x1-BND.x0),ah/(BND.y1-BND.y0));
   TT.k=fitK;
-  TT.x=(r.width-(BND.x1-BND.x0)*TT.k)/2-BND.x0*TT.k;
-  TT.y=(r.height-(BND.y1-BND.y0)*TT.k)/2-BND.y0*TT.k;
+  TT.x=side+(aw-(BND.x1-BND.x0)*TT.k)/2-BND.x0*TT.k;
+  TT.y=top+(ah-(BND.y1-BND.y0)*TT.k)/2-BND.y0*TT.k;
   apply();
 }
 const clampK=k=>Math.max(fitK*.85,Math.min(6,k));
@@ -569,7 +722,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){sel=null;closeSheet
 
 /* ===================== HORAIRES : DÉPARTS (bleu) / ARRIVÉES (vert) ===================== */
 /* Données : horaires-paca.json (généré par build_horaires.py). Sans fichier, une grille théorique de démonstration s'affiche. */
-var H=null,Hdemo=false,Hnote='',Hready=false,bdSt=null,bdTab='d',bdDay=0,bdMax=8,demoCache={},lastMin=-1;
+var H=null,Hdemo=false,Hnote='',Hready=false,bdSt=null,bdTab='d',bdDay=0,bdMax=8,demoCache={},lastMin=-1,bdKind=null,INC=null;
 const pad=n=>String(n).padStart(2,'0');
 const hh=m=>pad(Math.floor(m/60)%24)+'h'+pad(m%60);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -600,7 +753,7 @@ function dayIdx(add,start){
   const t=new Date(),tu=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())+add*864e5,[y,m,d]=start.split('-').map(Number);
   return Math.round((tu-Date.UTC(y,m-1,d))/864e5);
 }
-function boardOpen(id){bdSt=id;bdMax=8;boardRender()}
+function boardOpen(id){bdKind=null;bdSt=id;bdMax=8;boardRender()}
 function boardRender(){
   const box=document.getElementById('board');if(!box||!bdSt)return;
   const id=bdSt,name=N[id].name;
@@ -620,11 +773,12 @@ function boardRender(){
   }else{
     if(bdDay>=dayChips.length)bdDay=0;
     const ix=dayIdx(bdDay,start);
-    const all=(data[bdTab]||[]).filter(e=>((e[3]>>ix)&1)&&(bdDay>0||e[0]>=nowM));
+    const all=(data[bdTab]||[]).filter(e=>((e[3]>>ix)&1)&&(bdDay>0||e[0]>=nowM)&&(!bdKind||bdKind.includes(e[5])));
     const shown=all.slice(0,bdMax);
     rows=shown.length?shown.map(e=>{
       const via=(e[4]||[]).map(s=>N[s]&&N[s].name).filter(Boolean).join(' • ');
-      return `<div class="bd-r"><div class="bd-ty"><b>${esc(e[5]||'')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${via?`<em>${esc(via)}</em>`:''}</div></div>`}).join('')
+      const inc=INC&&INC.by&&e[2]&&INC.by[e[2]];
+      return `<div class="bd-r"><div class="bd-ty"><b class="k-${esc(e[5]||'')}">${esc(e[5]||'')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${(inc||via)?`<em>${inc?`<span class="bd-tag s-${esc(inc.sev||'lo')}">${esc(inc.effect||'Perturbé')}</span>`:''}${esc(via)}</em>`:''}</div></div>`}).join('')
       :`<div class="bd-r empty">${bdDay===0?'Plus de '+(bdTab==='d'?'départs':'arrivées')+' aujourd\'hui. Essaie « Dem. ».':'Aucun horaire ce jour-là.'}</div>`;
     var more=all.length>bdMax?`<button class="bd-more" data-bm="1">Voir plus (${all.length-bdMax})</button>`:'';
   }
@@ -660,14 +814,60 @@ fetch('horaires-paca.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return 
 const ZOU_EX=[{n:'51',d:'Nice - Digne-les-Bains'},{n:'60',d:'Nice - Aix-en-Provence'},{n:'80',d:'Nice Aéroport - Monaco - Menton'},{n:'81',d:'Nice Aéroport - Cannes'},{n:'82',d:'Nice Aéroport - Vallauris'},{n:'83',d:'Valberg - Beuil - Nice'},{n:'90',d:'Saint-Raphaël - Fréjus - Mandelieu - Nice'}];
 const ZOU_PX=[{n:'600',d:'Nice - Monaco - Menton'},{n:'601',d:'Nice - Monaco - Menton'},{n:'602',d:'Nice - Èze village - Monaco'},{n:'603',d:'Nice - La Turbie - Peille - Monaco'},{n:'604',d:'Peille - La Turbie - Monaco'},{n:'605',d:'Èze - La Turbie - Monaco'},{n:'610',d:'Nice - La Grave de Contes'},{n:'611',d:'La Grave de Contes - Sclos Saint-Hélène'},{n:'612',d:'La Grave de Contes - Berre-les-Alpes'},{n:'613',d:'La Grave de Contes - Coaraze'},{n:'614',d:"Gare de Drap / Cantaron - Touët-de-l'Escarène"},{n:'615',d:'Nice - Escarène / Lucéram'},{n:'616',d:'Nice - Escarène / Lucéram'},{n:'617',d:'La Grave de Contes - Châteauneuf-Villevieille'},{n:'620',d:'Nice - Cannes'},{n:'621',d:'Nice - Cannes'},{n:'622',d:'Nice - Villeneuve-Loubet'},{n:'629',d:'La Roquette - Mougins'},{n:'630',d:'Nice - Sophia'},{n:'631',d:'Nice - Sophia'},{n:'632',d:'Nice - Sophia'},{n:'636',d:'Vence - Sophia'},{n:'637',d:'Saint-Laurent - Sophia'},{n:'650',d:'Grasse - Nice'},{n:'651',d:'Grasse - Vence'},{n:'652',d:'Grasse - Gréolières'},{n:'653',d:'Grasse - Valbonne - Sophia / Antibes'},{n:'654',d:'Valbonne - Z.I. Carros - Vence'},{n:'655',d:'Cagnes - Vence par St Paul'},{n:'660',d:'Grasse - Cannes'},{n:'661',d:'Grasse - Cannes'},{n:'662',d:'Grasse - Cannes'},{n:'663',d:'Cannes - Valbonne'},{n:'664',d:'Cannes - Sophia'},{n:'670',d:'Valberg - Nice'},{n:'671',d:'Bouyon - Carros - Manda - Nice Cadam'},{n:'672',d:'Sigale - Gilette - Nice Grand Arénas'},{n:'675',d:'Guillaumes - Puget-Théniers - Nice Grand Arénas'}];
 const zl=(a,c)=>'<ul class="zl">'+a.map(x=>`<li><span class="bl ${c}">Ligne ${x.n}</span><span>${esc(x.d)}</span></li>`).join('')+'</ul>';
-function busUi(){const b=document.getElementById('busbtn');if(b)b.classList.toggle('on',sheet.style.display==='block'&&sheet.dataset.m==='bus')}
-document.getElementById('busbtn').addEventListener('click',()=>{
-  if(sheet.style.display==='block'&&sheet.dataset.m==='bus'){closeSheet();paint();return}
-  sel=null;bdSt=null;curSt=null;paint();
-  openSheet(`<div class="sh-h"><div class="zou-h" style="flex:1"><b>Réseau ZOU ! — Alpes-Maritimes</b><small>Récapitulatif des lignes et destinations</small></div><button class="x" aria-label="Fermer">✕</button></div>
-  <div class="zou"><h3>Lignes Express</h3>${zl(ZOU_EX,'ex')}<h3>Lignes de Proximité</h3>${zl(ZOU_PX,'')}</div>`);
-  sheet.dataset.m='bus';busUi();
+const PANELS={bus:'busbtn',tgv:'tgvbtn',inc:'incbtn'};
+function busUi(){for(const m in PANELS){const b=document.getElementById(PANELS[m]);if(b)b.classList.toggle('on',sheet.style.display==='block'&&sheet.dataset.m===m)}}
+function openPanel(m,html){
+  if(sheet.style.display==='block'&&sheet.dataset.m===m){closeSheet();paint();return}
+  sel=null;bdSt=null;bdKind=null;curSt=null;paint();openSheet(html);sheet.dataset.m=m;busUi();
+}
+document.getElementById('busbtn').addEventListener('click',()=>openPanel('bus',`<div class="sh-h"><div class="zou-h" style="flex:1"><img class="zlogo" src="favicon.png" alt="" onerror="this.remove()"><div><b>Réseau ZOU ! — Alpes-Maritimes</b><small>Récapitulatif des lignes et destinations</small></div></div><button class="x" aria-label="Fermer">✕</button></div>
+  <div class="zou"><h3>Lignes Express</h3>${zl(ZOU_EX,'ex')}<h3>Lignes de Proximité</h3>${zl(ZOU_PX,'')}</div>`));
+
+/* ---- rubrique TGV (INOUI & OUIGO) ---- */
+const TGVK='INOUI OUIGO TGV'.split(' ');
+var tgvId=null,tgvF='all';
+function tgvStations(){
+  if(!H||Hdemo||!H.stations)return[];
+  return Object.keys(H.stations).filter(id=>N[id]&&H.stations[id].d.some(e=>TGVK.includes(e[5]))).sort((x,y)=>N[x].name.localeCompare(N[y].name,'fr'));
+}
+function tgvHtml(){
+  const ids=tgvStations();
+  const head=`<div class="sh-h"><div class="tgv-h"><b>TGV INOUI &amp; OUIGO</b><small>Départs et arrivées des grandes lignes</small></div><button class="x" aria-label="Fermer">✕</button></div>`;
+  if(!ids.length)return head+`<p class="bd-note warn">${Hdemo?'Les horaires TGV demandent le fichier horaires-paca.json : lance le workflow « Mise à jour des horaires » dans Actions.':'Aucun TGV INOUI ou OUIGO reconnu dans le fichier d\'horaires.'}</p>`;
+  if(!tgvId||!ids.includes(tgvId))tgvId=ids.includes('mar')?'mar':ids[0];
+  const ks=[{k:'all',t:'Tous'},{k:'INOUI',t:'INOUI'},{k:'OUIGO',t:'OUIGO'}];
+  return head+`<div class="tgv-ctl"><select id="tgvsel" aria-label="Gare">${ids.map(i=>`<option value="${i}"${i===tgvId?' selected':''}>${esc(N[i].name)}</option>`).join('')}</select><div class="tgv-k">${ks.map(k=>`<button class="tgv-kb k-${k.k}${tgvF===k.k?' on':''}" data-tk="${k.k}">${k.t}</button>`).join('')}</div></div><div id="board"></div>`;
+}
+function tgvApply(){bdKind=tgvF==='all'?TGVK:[tgvF];bdSt=tgvId;bdMax=8;boardRender()}
+document.getElementById('tgvbtn').addEventListener('click',()=>{
+  const opening=!(sheet.style.display==='block'&&sheet.dataset.m==='tgv');
+  openPanel('tgv',tgvHtml());
+  if(opening&&document.getElementById('tgvsel'))tgvApply();
 });
+sheet.addEventListener('change',e=>{if(e.target.id==='tgvsel'){tgvId=e.target.value;tgvApply()}});
+sheet.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tk]');if(!t)return;
+  tgvF=t.dataset.tk;sheet.querySelectorAll('.tgv-kb').forEach(b=>b.classList.toggle('on',b.dataset.tk===tgvF));tgvApply();
+});
+
+/* ---- incidents (fichier incidents.json, mis à jour par le workflow « Incidents ») ---- */
+function incBadge(){const c=document.getElementById('incn'),n=INC&&INC.items?INC.items.length:0;c.textContent=n>99?'99+':n;c.style.display=n?'grid':'none'}
+function incHtml(){
+  const head=`<div class="sh-h"><div class="inc-h"><b>Incidents</b><small>Perturbations signalées par la SNCF</small></div><button class="x" aria-label="Fermer">✕</button></div>`;
+  if(!INC)return head+`<p class="bd-note warn">Fichier incidents.json introuvable : lance le workflow « Incidents » dans l'onglet Actions de ton dépôt.</p>`;
+  const items=INC.items||[],t=INC.generated?new Date(INC.generated).toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}):'';
+  if(!items.length)return head+`<p class="inc-ok">✓ Aucun incident signalé sur les gares du plan.</p><p class="bd-note">Mis à jour : ${esc(t)}.</p>`;
+  return head+items.map(it=>`<div class="inc-i"><div class="inc-t"><span class="inc-e e-${esc(it.sev||'lo')}">${esc(it.effect||'Info')}</span><b>${esc(it.header||'Perturbation')}</b></div>${it.text?`<p>${esc(it.text)}</p>`:''}${(it.stations&&it.stations.filter(s=>N[s]).length)?`<div class="inc-s">${it.stations.filter(s=>N[s]).slice(0,8).map(s=>`<button class="inc-sb" data-st="${s}">${esc(N[s].name)}</button>`).join('')}</div>`:''}${(it.trains&&it.trains.length)?`<div class="inc-n">Trains : ${it.trains.slice(0,8).map(esc).join(', ')}</div>`:''}</div>`).join('')+`<p class="bd-note">Source SNCF (alertes temps réel), mis à jour : ${esc(t)}. Quelques minutes de décalage possibles.</p>`;
+}
+document.getElementById('incbtn').addEventListener('click',()=>openPanel('inc',incHtml()));
+function incLoad(){
+  fetch('incidents.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{
+    INC=j;INC.by={};(j.items||[]).forEach(it=>(it.trains||[]).forEach(t=>{if(!INC.by[t])INC.by[t]=it}));
+    incBadge();if(bdSt&&Hready)boardRender();
+    if(sheet.style.display==='block'&&sheet.dataset.m==='inc'){sheet.innerHTML='<div class="grab"></div>'+incHtml()}
+  }).catch(()=>{INC=null;incBadge()});
+}
+incLoad();setInterval(incLoad,300000);
 
 window.addEventListener('resize',()=>{liftZoom();if(!ptrs.size){const k=TT.k/fitK;fit();if(k>1.02){TT.k=fitK*k;apply()}}});
 fit();paint();
