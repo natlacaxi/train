@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Plan du réseau TER – Provence-Alpes-Côte d'Azur</title>
+<style>
+:root{
+  --bg:#eef3f7;--panel:#ffffffee;--ink:#10264f;--muted:#62708c;--bd:#dbe4ee;--acc:#f39200;
+  --chip:#e9eff6;--casing:#1b2b57;--dot:#fff;--shadow:0 6px 24px rgba(16,38,79,.14),0 1px 3px rgba(16,38,79,.08);
+  --r:14px;--ease:cubic-bezier(.2,.8,.2,1)
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0d1526;--panel:#16213bee;--ink:#e8eefb;--muted:#93a1c0;--bd:#26345a;--chip:#1f2c4b;
+  --casing:#05080f;--dot:#0d1526;--shadow:0 6px 24px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-feature-settings:"tnum";-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#app{position:fixed;inset:0}
+#stage{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  background:radial-gradient(1200px 700px at 30% 20%,color-mix(in srgb,var(--bg) 85%,#fff),var(--bg))}
+svg{width:100%;height:100%;display:block;cursor:grab}
+svg:active{cursor:grabbing}
+
+/* en-tête flottant */
+header{position:absolute;z-index:6;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));
+  top:max(10px,env(safe-area-inset-top));pointer-events:none;display:flex;flex-direction:column;gap:8px;max-width:560px}
+.top{display:flex;gap:8px;align-items:center;pointer-events:auto}
+.brand{display:flex;align-items:center;gap:10px;background:var(--panel);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid var(--bd);border-radius:var(--r);padding:7px 12px 7px 8px;box-shadow:var(--shadow);flex:none}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#1E6FD9,#00A3A1);display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px;cursor:default}
+h1{font-size:15px;margin:0;line-height:1.1;font-weight:750;letter-spacing:-.01em;white-space:nowrap}
+h1 small{display:block;font-weight:500;color:var(--muted);font-size:11px;letter-spacing:0;margin-top:2px}
+.search{position:relative;flex:1;min-width:0}
+.search input{width:100%;height:46px;padding:0 14px 0 40px;border:1px solid var(--bd);border-radius:var(--r);font-size:15px;font-family:inherit;
+  background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--ink);outline:none;box-shadow:var(--shadow);transition:border-color .15s}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{border-color:var(--acc)}
+.search::before{content:"";position:absolute;left:14px;top:50%;width:18px;height:18px;margin-top:-9px;pointer-events:none;opacity:.6;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2362708c' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E")}
+#res{position:absolute;left:0;right:0;top:100%;background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:var(--r);margin-top:6px;
+  max-height:55vh;overflow:auto;display:none;box-shadow:var(--shadow);z-index:20;padding:4px}
+#res button{display:flex;width:100%;text-align:left;border:0;background:none;padding:10px 10px;font-size:14px;gap:8px;justify-content:space-between;align-items:center;border-radius:10px;cursor:pointer}
+#res button:hover,#res button:focus-visible{background:var(--chip)}
+.bs{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;pointer-events:auto;
+  -webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.chips::-webkit-scrollbar{display:none}
+
+/* pastilles de ligne */
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 8px;border-radius:9px;font-weight:800;font-size:13px;
+  border:0;cursor:pointer;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .15s var(--ease),box-shadow .15s}
+.badge:active{transform:scale(.94)}
+.badge.sm{min-width:26px;height:22px;font-size:11px;padding:0 6px;border-radius:7px;box-shadow:none}
+.chip-all{background:var(--panel);color:var(--ink);border:1px solid var(--bd);box-shadow:var(--shadow);backdrop-filter:blur(12px);padding:0 14px}
+.chips .badge.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+.chips .badge:not(.chip-all){box-shadow:var(--shadow)}
+.chips .badge.on:not(.chip-all){box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+
+/* carte */
+.casing{fill:none;stroke:var(--casing);stroke-linecap:round;transition:opacity .25s}
+.stripe{fill:none;stroke-linecap:butt;transition:opacity .25s}
+.hit{fill:none;stroke:transparent;pointer-events:stroke;cursor:pointer}
+.dot{fill:var(--dot);stroke:var(--casing);transition:opacity .25s}
+.stn{cursor:pointer}
+.stn .ring{fill:none;stroke:var(--acc);stroke-width:4;opacity:0;transition:opacity .2s}
+.stn.cur .ring{opacity:1;animation:pulse 1.6s var(--ease) infinite}
+@keyframes pulse{50%{stroke-opacity:.35}}
+.lab{font-size:12px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none;transition:opacity .25s;letter-spacing:-.005em}
+.lab.major{font-size:19px;font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+.lab.term{fill:var(--acc);font-size:17px;font-weight:800;text-transform:uppercase}
+.lab.minor{display:none}
+svg.zm .lab.minor{display:block}
+svg.zl.sel .lab.minor.act{display:block}
+svg.sel .casing:not(.act),svg.sel .stripe:not(.act){opacity:.12}
+svg.sel .stn:not(.act):not(.term),svg.sel .lab:not(.act):not(.term){opacity:.25}
+
+.ui{position:absolute}
+#zoom{right:max(12px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:0;z-index:3;
+  background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;transition:bottom .3s var(--ease)}
+#zoom button{width:46px;height:46px;border:0;background:none;font-size:22px;cursor:pointer}
+#zoom button+button{border-top:1px solid var(--bd)}
+#zoom button:hover{background:var(--chip)}
+#note{left:max(12px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));font-size:11px;color:var(--muted);pointer-events:none;
+  background:var(--panel);padding:3px 9px;border-radius:99px;backdrop-filter:blur(8px)}
+
+/* fiche en bas d'écran */
+#sheet{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));max-width:500px;
+  background:var(--panel);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid var(--bd);
+  border-radius:20px;box-shadow:var(--shadow);padding:6px 16px 16px;max-height:64%;overflow:auto;display:none;z-index:4;overscroll-behavior:contain}
+#sheet.in{animation:rise .32s var(--ease)}
+@keyframes rise{from{transform:translateY(24px);opacity:0}}
+.grab{width:38px;height:4px;border-radius:4px;background:var(--bd);margin:4px auto 10px}
+.sh-h{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
+.sh-h h2{margin:0;font-size:19px;line-height:1.2;font-weight:750;letter-spacing:-.015em}
+.ttl{display:flex;align-items:center;gap:10px}
+.x{border:0;background:var(--chip);border-radius:50%;width:32px;height:32px;font-size:14px;flex:none;cursor:pointer}
+.x:hover{filter:brightness(.95)}
+.sub{color:var(--muted);font-size:13px;margin:6px 0 10px}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+ul.nb,ol.st{list-style:none;margin:6px 0 0;padding:0}
+ul.nb li{display:flex;gap:10px;align-items:center;font-size:13.5px;padding:8px 0;border-top:1px solid var(--bd)}
+ul.nb a,ol.st a{color:var(--ink);cursor:pointer;text-decoration:none;font-weight:600}
+ul.nb a:hover{text-decoration:underline}
+ol.st li{display:flex;align-items:center;gap:8px;padding:7px 0 7px 22px;position:relative;font-size:14.5px;cursor:pointer;justify-content:space-between;border-radius:8px}
+ol.st li:hover{background:var(--chip)}
+ol.st li::before{content:"";position:absolute;left:7px;top:0;bottom:0;width:5px;background:var(--lc)}
+ol.st li:first-child::before{top:50%;border-radius:5px 5px 0 0}
+ol.st li:last-child::before{bottom:50%;border-radius:0 0 5px 5px}
+ol.st li::after{content:"";position:absolute;left:2px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--dot);border:3.5px solid var(--lc)}
+ol.st li.t{font-weight:750}
+
+/* guide de la gare (API SNCF) */
+.guide{margin-top:12px;border-top:1px solid var(--bd);padding-top:10px}
+.guide h3{margin:0 0 8px;font-size:14px;font-weight:750}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13.5px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600}
+.skel{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--chip),var(--bd),var(--chip));background-size:200% 100%;animation:sk 1.2s linear infinite;margin:7px 0}
+@keyframes sk{to{background-position:-200% 0}}
+.empty{font-size:13px;color:var(--muted);margin:2px 0 0}
+.lnk{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13.5px;font-weight:700;color:var(--ink);background:var(--chip);border-radius:10px;padding:9px 12px;text-decoration:none}
+.lnk:hover{filter:brightness(.96)}
+@media(min-width:700px){#sheet{left:12px;bottom:12px}}
+@media(max-width:520px){.brand{padding:7px}.brand h1{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== tableau des départs / arrivées ===== */
+#board{margin:12px 0 4px}
+.bd-tabs{display:flex;gap:8px;margin-bottom:8px}
+.bd-tab{flex:1;height:40px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);font-weight:750;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,color .15s,border-color .15s}
+.bd-tab::before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.9}
+.bd-tab.d{color:#1b7be6}.bd-tab.a{color:#16934d}
+.bd-tab.d.on{background:#1b7be6;border-color:#1b7be6;color:#fff}
+.bd-tab.a.on{background:#16934d;border-color:#16934d;color:#fff}
+.bd-days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}
+.bd-days::-webkit-scrollbar{display:none}
+.bd-day{flex:none;border:1px solid var(--bd);background:none;border-radius:99px;padding:5px 12px;font-size:12.5px;font-weight:650;cursor:pointer;color:var(--muted);text-transform:capitalize}
+.bd-day.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.bd{--c1:#2d9bff;--c2:#1a80f0;--cb:#0b3a7a;position:relative;border-radius:14px;overflow:hidden;background:var(--cb);border:3px solid #050b18;box-shadow:0 8px 24px rgba(0,0,0,.28);color:#fff}
+.bd.a{--c1:#27b567;--c2:#1a9a52;--cb:#0b4a2a}
+.bd-body{padding-right:34px}
+.bd-side{position:absolute;right:0;top:0;bottom:30px;width:34px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,var(--c1),var(--c2))}
+.bd-side span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:26px;font-weight:300;letter-spacing:.02em;color:#fff;opacity:.95}
+.bd-r{display:grid;grid-template-columns:50px 58px 1fr;align-items:center;gap:6px;padding:7px 8px;min-height:52px}
+.bd-r:nth-child(odd){background:var(--c1)}.bd-r:nth-child(even){background:var(--c2)}
+.bd-ty{display:flex;flex-direction:column;align-items:flex-start;font-size:10px;font-weight:800;line-height:1.05;letter-spacing:.02em}
+.bd-ty b{font-size:9.5px;opacity:.95;display:flex;align-items:center;gap:3px}
+.bd-ty b::before{content:"";width:9px;height:6px;background:#fff;border-radius:2px 5px 2px 5px;opacity:.85}
+.bd-ty i{font-style:normal;font-size:13px;font-weight:800;margin-top:2px}
+.bd-t{font-size:20px;font-weight:800;letter-spacing:-.01em;text-shadow:0 1px 0 rgba(0,0,0,.18)}
+.bd-d{min-width:0;display:flex;flex-direction:column}
+.bd-d strong{font-size:18px;font-weight:650;line-height:1.1;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-d em{font-style:normal;font-size:13px;font-weight:500;opacity:.92;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-r.empty{display:block;padding:18px 14px;background:var(--c2);font-size:14px;line-height:1.4}
+.bd-f{display:flex;align-items:center;justify-content:space-between;gap:10px;height:30px;padding:0 8px;background:linear-gradient(90deg,var(--c1),var(--c2));font-style:italic;font-size:14.5px;border-top:2px solid rgba(255,255,255,.18)}
+.bd-f span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-clk{font-style:normal;font-weight:800;font-size:14px;border:1.5px solid #fff;border-radius:3px;padding:0 6px;line-height:20px;flex:none;font-variant-numeric:tabular-nums}
+.bd-clk small{font-size:10px;font-weight:700;margin-left:2px;vertical-align:baseline}
+.bd-more{display:block;width:100%;margin-top:8px;border:1px solid var(--bd);background:var(--chip);border-radius:10px;height:38px;font-size:13.5px;font-weight:700;cursor:pointer}
+.bd-note{font-size:11.5px;color:var(--muted);margin:8px 0 0;line-height:1.4}
+.bd-note.warn{color:#b86e00}
+@media(prefers-color-scheme:dark){.bd-note.warn{color:#ffb454}.bd-tab.d{color:#6db3ff}.bd-tab.a{color:#4fd08a}}
+@media(max-width:380px){.bd-r{grid-template-columns:44px 52px 1fr}.bd-t{font-size:18px}.bd-d strong{font-size:16px}}
+.skel.tall{height:150px;border-radius:14px}
+
+/* menu bus */
+.busbtn{height:46px;flex:none;display:flex;align-items:center;gap:8px;padding:0 14px;border-radius:var(--r);border:1px solid var(--bd);background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow);font-weight:750;font-size:14px;cursor:pointer;pointer-events:auto}
+.busbtn svg{width:22px;height:22px;cursor:pointer;color:#0384c6}
+.busbtn.on{border-color:#0384c6}
+@media(max-width:520px){.busbtn{padding:0 11px}.busbtn span{display:none}}
+.zou-h{background:linear-gradient(135deg,#0384c6,#0268a3);color:#fff;border-radius:14px;padding:14px 16px;margin:8px 0 4px}
+.zou-h b{display:block;font-size:18px;letter-spacing:-.01em}.zou-h small{opacity:.9;font-size:12.5px}
+.zou h3{margin:16px 0 6px;font-size:15px;font-weight:800;color:#0384c6;padding-bottom:6px;border-bottom:2px solid #0384c6}
+ul.zl{list-style:none;margin:0;padding:0}
+ul.zl li{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);font-size:14px}
+ul.zl li:last-child{border-bottom:0}
+.bl{flex:none;min-width:68px;text-align:center;padding:3px 8px;border-radius:7px;font-weight:800;font-size:12.5px;background:rgba(3,132,198,.14);color:#0369a1}
+.bl.ex{background:rgba(245,158,11,.2);color:#b45309}
+@media(prefers-color-scheme:dark){.bl{color:#7cc7f2}.bl.ex{color:#fbbf6a}.zou h3{color:#4fb4ea;border-color:#4fb4ea}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <svg id="map" role="img" aria-label="Plan schématique du réseau TER PACA"><g id="vp"></g></svg>
+    <div class="ui" id="zoom"><button id="zi" aria-label="Zoom avant">+</button><button id="zo" aria-label="Zoom arrière">−</button><button id="zr" aria-label="Recentrer la carte">⌂</button></div>
+    <div class="ui" id="note">Plan schématique, desserte indicative</div>
+    <div class="ui" id="sheet"></div>
+  </div>
+  <header>
+    <div class="top">
+      <div class="brand">
+        <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/><circle cx="4" cy="18" r="1.4" fill="#fff"/><circle cx="20" cy="18" r="1.4" fill="#fff"/></svg></div>
+        <h1>Réseau TER<small>Provence-Alpes-Côte d'Azur</small></h1>
+      </div>
+      <div class="search">
+        <input id="q" type="search" placeholder="Rechercher une gare" autocomplete="off" aria-label="Rechercher une gare">
+        <div id="res"></div>
+      </div>
+      <button class="busbtn" id="busbtn" aria-label="Bus Alpes-Maritimes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v2.5M16 17v2.5"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/></svg><span>Bus 06</span></button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </header>
+</div>
+<script>
+/* ===================== DONNÉES ===================== */
+const N={};
+const chk=id=>{if(N[id])throw new Error('doublon '+id)};
+const S=(id,name,x,y,lab,o)=>{chk(id);N[id]={id,name,x,y,t:1,lab:lab||'r',...(o||{})}};
+const W=(id,x,y)=>{chk(id);N[id]={id,x,y,t:0}};
+const T=(id,name,x,y,dx,dy)=>{chk(id);N[id]={id,name,x,y,t:2,dx,dy}};
+const row=(list,x0,y0,x1,y1,lab)=>list.forEach((p,i)=>{const f=list.length==1?0:i/(list.length-1);S(p[0],p[1],x0+(x1-x0)*f,y0+(y1-y0)*f,lab,p[2])});
+
+/* Marseille & côte bleue / Rognac */
+S('mar','Marseille-Saint-Charles',481,1024,'b',{major:1});
+W('w_b2',285,1024);W('w_b1',262,1000);
+S('arenc','Arenc-Euroméditerranée',262,932,'l');
+S('estaque',"L'Estaque",262,884,'l');
+W('w_j',262,832);W('w_l2',225,795);
+row([['nio','Niolon'],['red','La Redonne-Ensuès'],['car','Carry-le-Rouet'],['sau','Sausset-les-Pins'],['cou','La Couronne-Carro'],['mtg','Martigues'],['cro','Croix-Sainte'],['pdb','Port-de-Bouc'],['fos','Fos-sur-Mer'],['ras','Rassuen'],['ist','Istres']],225,786,225,544,'l');
+W('w_l1',225,505);W('w_r1',300,505);W('w_m1',262,468);W('w_r2',300,795);
+row([['pas','Pas-des-Lanciers'],['vit','Vitrolles-Aéroport-Marseille-Provence',{air:1}],['rog','Rognac'],['stc','Saint-Chamas']],300,737,300,592,'r');
+S('mir','Miramas',262,428,'l',{major:1});
+
+/* Boucle Arles / Cavaillon */
+W('w_t1',420,428);W('w_t2',445,392);
+S('smc','Saint-Martin-de-Crau',490,392,'u');
+S('arl','Arles',590,392,'t',{major:1});
+W('w_t3',687,392);W('w_t4',740,392);W('w_t5',762,428);
+W('w_c1',445,465);
+row([['sal','Salon-de-Provence'],['lam','Lamanon'],['sen','Sénas'],['org','Orgon']],463,465,535,465,'dn');
+S('cav','Cavaillon',566,465,'t',{major:1});
+row([['isl','Isle-sur-la-Sorgue - Fontaine-de-Vaucluse'],['tho','Le Thor'],['gad','Gadagne'],['sts','Saint-Saturnin-lès-Avignon'],['mor','Morières-lès-Avignon'],['mtf','Montfavet']],595,465,717,465,'dn');
+W('w_c2',740,465);
+S('tar','Tarascon',687,361,'r');
+T('nim','Nîmes / Montpellier',687,305,0,-1);
+
+/* Avignon, Orange, Carpentras */
+S('avi','Avignon-Centre',845,428,'b',{major:1});
+S('tgv','Avignon TGV',845,374,'u');
+S('sor','Sorgue - Châteauneuf-du-Pape',887,428,'u');
+W('w_j1',966,428);W('w_j2',966,368);
+row([['bed','Bédarrides'],['cou2','Courthézon']],1009,368,1045,368,'u');
+S('ora','Orange',1125,368,'b',{major:1});
+S('bol','Bollène-la-Croisière',1179,368,'u');
+T('ly','Lyon / Valence',1230,368,1,0);
+row([['ent','Entraigues-sur-la-Sorgue'],['mont','Monteux']],1000,428,1038,428,'dn');
+S('cpt','Carpentras',1076,428,'b',{major:1});
+
+/* Aix, Pertuis, Alpes */
+row([['pic','Picon-Busserine'],['smp','Sainte-Marthe-en-Provence'],['sjc','Saint-Joseph-le-Castellas'],['sai','Saint-Antoine'],['sept','Septèmes-les-Vallons'],['sim','Simiane'],['gar','Gardanne']],481,993,481,847,'l');
+S('aix','Aix-en-Provence',481,817,'l',{major:1});
+S('mey','Meyrargues',511,817,'u');
+W('w_pe',541,817);
+S('per','Pertuis',541,860,'b');
+row([['man','Manosque-Gréoux-les-Bains'],['bri','La Brillanne-Oraison'],['cha','Château-Arnoux-Saint-Auban'],['sis','Sisteron'],['lar','Laragne'],['ser','Serres']],571,817,693,817,'u');
+S('vey','Veynes-Dévoluy',771,817,'b',{major:1});
+S('gap','Gap',833,817,'t',{major:1});
+row([['cho','Chorges'],['emb','Embrun'],['mdg','Mont-Dauphin - Guillestre'],['arg',"L'Argentière-les-Écrins"]],863,817,936,817,'u');
+S('brc','Briançon',966,817,'b',{major:1});
+S('asp','Aspes-sur-Buëch',771,772,'r');
+T('ter','Valence / Grenoble',771,665,0,-1);
+
+/* Marseille – Toulon – Les Arcs */
+row([['bla','Marseille-Blancarde'],['pom','La Pomme'],['smar','Saint-Marcel'],['bar','La Barasse'],['pen','La Penne-sur-Huveaune'],['aub','Aubagne'],['cas','Cassis'],['cio','La Ciotat'],['cey','Ceyreste'],['sca','Saint-Cyr - Les Lecques - La Cadière'],['ban','Bandol'],['oll','Ollioules - Sanary - Six-Fours'],['sey','La Seyne - Six-Fours']],511,1024,782,1024,'u');
+S('tou','Toulon',808,1024,'b',{major:1});
+row([['tsm','Toulon-Sainte-Musse'],['gar2','La Garde'],['pau','La Pauline - Hyères'],['sol','Solliès-Pont'],['cue','Cuers-Pierrefeu'],['pug','Puget-Ville']],845,1024,965,1024,'u');
+S('car2','Carnoules',991,1024,'b',{major:1});
+row([['pig','Pignans'],['gon','Gonfaron'],['luc','Le Luc - Le Cannet'],['vid','Vidauban']],1021,1024,1094,1024,'u');
+S('arc','Les Arcs-Draguignan',1173,1024,'b',{major:1});
+S('cra','La Crau',893,1066,'l');
+W('w_h1',893,1090);W('w_h2',911,1108);
+S('hye','Hyères',1002,1108,'r',{major:1});
+
+/* Côte d'Azur */
+row([['frej','Fréjus'],['srv','Saint-Raphaël-Valescure'],['bou','Boulouris-sur-Mer'],['dra','Le Dramont'],['aga','Agay'],['ant','Anthéor-Cap-Roux'],['tra','Le Trayas'],['the','Théoule-sur-Mer'],['man2','Mandelieu-la-Napoule'],['cbo','Cannes-la-Bocca']],1173,993,1173,774,'r');
+S('can','Cannes',1173,744,'l',{major:1});
+row([['mua','Muans-Sartoux'],['ran','Ranguin'],['fra','La Frayère'],['bos','Le Bosquet']],1173,580,1173,653,'l');
+S('gra','Grasse',1173,550,'t',{major:1});
+row([['gjv','Golfe-Juan-Vallauris'],['jlp','Juan-les-Pins'],['ant2','Antibes'],['bio','Biot'],['vlb','Villeneuve-Loubet'],['cag','Cagnes-sur-Mer'],['cdc','Cros-de-Cagnes'],['slv','Saint-Laurent-du-Var'],['nsa','Nice-Saint-Augustin',{air:1}]],1204,744,1398,744,'u');
+S('nic','Nice-Ville',1537,744,'r',{major:1});
+row([['pontm','Nice-Pont-Michel'],['ari',"L'Ariane - La Trinité"],['ltv','La Trinité-Victor'],['dra2','Drap-Cantaron'],['hal','Halte-de-Fontanil - Lycée de Drap'],['pei2','Peillon - Sainte-Thècle'],['pei','Peille'],['esc',"L'Escarène"],['tou2',"Touët-de-l'Escarène"],['sos','Sospel']],1537,713,1537,495,'r');
+S('bre','Breil-sur-Roya',1537,465,'l',{major:1});
+row([['fon','Fontan-Saorge'],['sdt','Saint-Dalmas-de-Tende'],['lab','La Brigue']],1568,465,1617,465,'u');
+S('ten','Tende',1695,465,'t',{major:1});
+T('cun','Cuneo / Turin',1735,465,1,0);
+row([['rqr','Nice-Riquier'],['vil','Villefranche-sur-Mer'],['bea','Beaulieu-sur-Mer'],['eze','Èze'],['cap',"Cap d'Ail"],['mon2','Monaco-Monte-Carlo'],['rcm','Roquebrune-Cap-Martin'],['car3','Carnolès - Roquebrune']],1537,774,1537,944,'r');
+S('men','Menton',1537,975,'l',{major:1});
+S('gar3','Menton-Garavan',1578,975,'b');
+S('vin','Vintimille',1635,975,'b',{major:1});
+T('sr','San Remo / Gênes',1690,975,1,0);
+
+/* Tronçons réutilisables */
+const ROG='mar w_b2 w_b1 arenc estaque w_j w_r2 pas vit rog stc w_r1 w_m1 mir';
+const BLEUE='mar w_b2 w_b1 arenc estaque w_j w_l2 nio red car sau cou mtg cro pdb fos ras ist w_l1 w_m1 mir';
+const TOP='w_t1 w_t2 smc arl w_t3 w_t4 w_t5 avi';
+const BOT='w_t1 w_c1 sal lam sen org cav isl tho gad sts mor mtf w_c2 w_t5 avi';
+const COR='bla pom smar bar pen aub cas cio cey sca ban oll sey tou';
+const TOH='tsm gar2 pau cra w_h1 w_h2 hye';
+const TOA='tsm gar2 pau sol cue pug car2 pig gon luc vid arc';
+const VAR='frej srv bou dra aga ant tra the man2 cbo can';
+const CN='gjv jlp ant2 bio vlb cag cdc slv nsa nic';
+const AIX='pic smp sjc sai sept sim gar aix';
+const ALP='mey w_pe man bri cha sis lar ser vey gap cho emb mdg arg brc';
+const SKR='arenc estaque stc pas';
+
+const LINES=[
+ {id:'01',n:'Marseille - Aubagne - Toulon - Hyères',c:'#E4002B',r:'mar '+COR+' '+TOH},
+ {id:'02',n:'Marseille - Toulon - Les Arcs Draguignan',c:'#FF7A00',r:'mar '+COR+' '+TOA},
+ {id:'03',n:'Les Arcs Draguignan - Saint-Raphaël - Cannes - Antibes - Nice',c:'#F2C800',r:'arc '+VAR+' '+CN},
+ {id:'04',n:'Grasse - Cannes - Nice - Vintimille',c:'#43A047',r:'gra mua ran fra bos can '+CN+' rqr vil bea eze cap mon2 rcm car3 men gar3 vin sr'},
+ {id:'05',n:'Nice - Breil - Tende',c:'#00A3A1',r:'nic pontm ari ltv dra2 hal pei2 pei esc tou2 sos bre fon sdt lab ten cun'},
+ {id:'06',n:'Marseille - Nice',c:'#1E6FD9',r:'mar '+COR+' '+TOA+' '+VAR+' '+CN,only:'mar aub cio ban tou car2 arc srv can ant2 nic'},
+ {id:'07A',n:'Marseille - Miramas via Rognac',c:'#6A1B9A',r:ROG,skip:'arenc estaque'},
+ {id:'07B',n:'Marseille - Miramas via Côte Bleue',c:'#BA68C8',r:BLEUE},
+ {id:'08',n:'Marseille - Avignon via Arles',c:'#E8559D',r:ROG+' '+TOP,skip:SKR},
+ {id:'09',n:'Marseille - Avignon via Cavaillon',c:'#8D5524',r:ROG+' '+BOT,skip:SKR},
+ {id:'10',n:'Marseille - Avignon - Valence - Lyon',c:'#0A2A6B',r:ROG+' '+BOT+' sor w_j1 w_j2 bed cou2 ora bol ly',skip:SKR+' vit lam sen org tho gad sts mor mtf'},
+ {id:'11',n:'Marseille - Nîmes - Montpellier',c:'#00B8F0',r:ROG+' w_t1 w_t2 smc arl w_t3 tar nim',skip:SKR+' smc'},
+ {id:'12',n:'Marseille - Aix-en-Provence - Pertuis',c:'#A5C93A',r:'mar '+AIX+' mey w_pe per'},
+ {id:'13',n:'Marseille - Aix-en-Provence - Gap - Briançon',c:'#455A64',r:'mar '+AIX+' '+ALP},
+ {id:'14',n:'Romans - Valence - Gap - Briançon',c:'#2E7D32',r:'ter asp vey gap cho emb mdg arg brc'},
+ {id:'15',n:'Gap - Grenoble',c:'#90A4AE',r:'ter asp vey gap'},
+ {id:'16',n:'Carpentras - Avignon - Avignon TGV',c:'#00695C',r:'cpt mont ent w_j1 sor avi tgv',skip:'sor'}
+];
+const LINE={},S2L={};
+const fgOf=c=>{const [r,g,b]=[1,3,5].map(i=>parseInt(c.substr(i,2),16));return (.299*r+.587*g+.114*b)>150?'#12306b':'#fff'};
+LINES.forEach(L=>{
+  L.fg=fgOf(L.c);LINE[L.id]=L;
+  L.nodes=L.r.split(' ');
+  const sk=new Set((L.skip||'').split(' ')),on=L.only?new Set(L.only.split(' ')):null;
+  L.nodes.forEach(id=>{if(!N[id])throw new Error('nœud inconnu '+id+' (ligne '+L.id+')')});
+  L.stops=L.nodes.filter(id=>{const n=N[id];if(n.t==0)return false;if(n.t==2)return true;if(sk.has(id))return false;if(on&&!on.has(id))return false;return true});
+  L.stops.forEach(id=>{(S2L[id]=S2L[id]||[]).push(L.id)});
+});
+/*RENDER*/
+/* ===================== RENDU ===================== */
+const $=s=>document.querySelector(s);
+const svg=$('#map'),vp=$('#vp'),stage=$('#stage'),sheet=$('#sheet');
+const NS='http://www.w3.org/2000/svg';
+const E=new Map();
+LINES.forEach(L=>{for(let i=0;i<L.nodes.length-1;i++){let a=L.nodes[i],b=L.nodes[i+1];if(a>b)[a,b]=[b,a];const k=a+'|'+b;let e=E.get(k);if(!e){e={k,a,b,ls:[]};E.set(k,e)}if(!e.ls.includes(L.id))e.ls.push(L.id)}});
+
+(function build(){
+  let cas='',str='',hit='',stn='',lab='';
+  E.forEach(e=>{
+    const A=N[e.a],B=N[e.b],n=e.ls.length,w=8+2*n,sw=w/n;
+    const dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;
+    e.w=w;e.sw=sw;e.nx=nx;e.ny=ny;
+    const d=(o)=>`M${(A.x+nx*o).toFixed(1)} ${(A.y+ny*o).toFixed(1)}L${(B.x+nx*o).toFixed(1)} ${(B.y+ny*o).toFixed(1)}`;
+    cas+=`<path class="casing" data-e="${e.k}" d="${d(0)}" stroke-width="${w+4}"/>`;
+    e.ls.forEach((id,i)=>{const o=(i-(n-1)/2)*sw;str+=`<path class="stripe" data-l="${id}" data-e="${e.k}" d="${d(o)}" stroke="${LINE[id].c}" stroke-width="${(sw+.5).toFixed(2)}"/>`});
+    hit+=`<path class="hit" data-e="${e.k}" d="${d(0)}" stroke-width="${w+16}"/>`;
+  });
+  Object.values(N).forEach(n=>{
+    if(n.t==1){
+      const r=n.major?10:6.3,sw=n.major?4.2:3.2;
+      stn+=`<g class="stn" data-id="${n.id}"><title>${n.name}</title><circle class="ring" cx="${n.x}" cy="${n.y}" r="${r+7}"/><circle class="hitc" cx="${n.x}" cy="${n.y}" r="${r+9}" fill="transparent"/><circle class="dot" cx="${n.x}" cy="${n.y}" r="${r}" stroke-width="${sw}"/></g>`;
+      const d=n.major?16:10;let tx,ty,anc='start',tr='';
+      switch(n.lab){
+        case 'r':tx=n.x+d+3;ty=n.y+(n.major?7:4);break;
+        case 'l':tx=n.x-d-3;ty=n.y+(n.major?7:4);anc='end';break;
+        case 't':tx=n.x;ty=n.y-d-5;anc='middle';break;
+        case 'b':tx=n.x;ty=n.y+d+(n.major?18:14);anc='middle';break;
+        case 'u':tx=n.x+5;ty=n.y-d-1;tr=` transform="rotate(-45 ${tx} ${ty})"`;break;
+        case 'dn':tx=n.x+9;ty=n.y+d+8;anc='end';tr=` transform="rotate(-45 ${tx} ${ty})"`;break;
+      }
+      lab+=`<text class="lab ${n.major?'major':'minor'}" data-id="${n.id}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${anc}"${tr}>${n.name}${n.air?' ✈':''}</text>`;
+    }else if(n.t==2){
+      const tipx=n.x+n.dx*38,tipy=n.y+n.dy*38,bx=n.x+n.dx*8,by=n.y+n.dy*8,px=-n.dy*16,py=n.dx*16;
+      stn+=`<g class="stn term" data-id="${n.id}"><title>${n.name}</title><polygon points="${tipx},${tipy} ${bx+px},${by+py} ${bx-px},${by-py}" fill="#f39200"/></g>`;
+      let tx,ty,anc;
+      if(n.dx){tx=tipx+10;ty=tipy+6;anc='start'}else{tx=tipx;ty=tipy-10;anc='middle'}
+      lab+=`<text class="lab term" x="${tx}" y="${ty}" text-anchor="${anc}">${n.name}</text>`;
+    }
+  });
+  vp.innerHTML=`<g>${cas}</g><g>${str}</g><g>${hit}</g><g>${stn}</g><g>${lab}</g>`;
+})();
+
+/* ---- pan / zoom ---- */
+let T0={k:1,x:0,y:0},fitK=.5;
+const TT=T0;
+const BND={x0:30,y0:225,x1:1880,y1:1150};
+function apply(){
+  vp.setAttribute('transform',`translate(${TT.x.toFixed(1)} ${TT.y.toFixed(1)}) scale(${TT.k.toFixed(4)})`);
+  svg.classList.toggle('zm',TT.k>=.95);
+  svg.classList.toggle('zl',TT.k>=.5);
+}
+function fit(){
+  const r=stage.getBoundingClientRect();
+  fitK=Math.min(r.width/(BND.x1-BND.x0),r.height/(BND.y1-BND.y0));
+  TT.k=fitK;
+  TT.x=(r.width-(BND.x1-BND.x0)*TT.k)/2-BND.x0*TT.k;
+  TT.y=(r.height-(BND.y1-BND.y0)*TT.k)/2-BND.y0*TT.k;
+  apply();
+}
+const clampK=k=>Math.max(fitK*.85,Math.min(6,k));
+function zoomAt(cx,cy,f){const k=clampK(TT.k*f),q=k/TT.k;TT.x=cx-(cx-TT.x)*q;TT.y=cy-(cy-TT.y)*q;TT.k=k;apply()}
+function tween(k,x,y){
+  const s={k:TT.k,x:TT.x,y:TT.y},t0=performance.now();
+  const step=t=>{const p=Math.min(1,(t-t0)/380),q=1-Math.pow(1-p,3);TT.k=s.k+(k-s.k)*q;TT.x=s.x+(x-s.x)*q;TT.y=s.y+(y-s.y)*q;apply();if(p<1)requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+}
+const rel=e=>{const r=stage.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+const ptrs=new Map();let drag=null,pinch=null,moved=false;
+stage.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.ui'))return;
+  ptrs.set(e.pointerId,rel(e));
+  if(ptrs.size==1){moved=false;const p=rel(e);drag={x:p.x,y:p.y,tx:TT.x,ty:TT.y}}
+  else if(ptrs.size==2){
+    const [a,b]=[...ptrs.values()];
+    pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,k:TT.k,tx:TT.x,ty:TT.y,mx:(a.x+b.x)/2,my:(a.y+b.y)/2};
+    moved=true;drag=null;
+  }
+});
+stage.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId))return;
+  ptrs.set(e.pointerId,rel(e));
+  if(ptrs.size>=2&&pinch){
+    const [a,b]=[...ptrs.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y)||1,mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    const k=clampK(pinch.k*d/pinch.d),q=k/pinch.k;
+    TT.k=k;TT.x=mx-(pinch.mx-pinch.tx)*q;TT.y=my-(pinch.my-pinch.ty)*q;apply();
+  }else if(drag){
+    const p=rel(e),dx=p.x-drag.x,dy=p.y-drag.y;
+    if(!moved&&Math.hypot(dx,dy)>6)moved=true;
+    if(moved){TT.x=drag.tx+dx;TT.y=drag.ty+dy;apply()}
+  }
+});
+const up=e=>{
+  ptrs.delete(e.pointerId);
+  if(ptrs.size<2)pinch=null;
+  if(ptrs.size==1){const p=[...ptrs.values()][0];drag={x:p.x,y:p.y,tx:TT.x,ty:TT.y}}
+  else if(ptrs.size==0){drag=null;setTimeout(()=>{moved=false},60)}
+};
+stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+stage.addEventListener('wheel',e=>{if(e.target.closest('.ui'))return;e.preventDefault();const p=rel(e);zoomAt(p.x,p.y,Math.exp(-e.deltaY*.0015))},{passive:false});
+const cen=()=>{const r=stage.getBoundingClientRect();return{x:r.width/2,y:r.height/2}};
+$('#zi').onclick=()=>{const c=cen();zoomAt(c.x,c.y,1.5)};
+$('#zo').onclick=()=>{const c=cen();zoomAt(c.x,c.y,1/1.5)};
+$('#zr').onclick=()=>{const s={...TT};fit();const t={...TT};Object.assign(TT,s);tween(t.k,t.x,t.y);sel=null;closeSheet();paint()};
+
+/* ---- sélection ---- */
+let sel=null,curSt=null;
+function paint(){
+  svg.classList.toggle('sel',!!sel);
+  const set=sel?new Set(LINE[sel].stops):null;
+  vp.querySelectorAll('.casing').forEach(el=>el.classList.toggle('act',!!sel&&E.get(el.dataset.e).ls.includes(sel)));
+  vp.querySelectorAll('.stripe').forEach(el=>el.classList.toggle('act',el.dataset.l===sel));
+  vp.querySelectorAll('.stn').forEach(el=>{el.classList.toggle('act',!!set&&set.has(el.dataset.id));el.classList.toggle('cur',el.dataset.id===curSt)});
+  vp.querySelectorAll('text.lab[data-id]').forEach(el=>el.classList.toggle('act',!!set&&set.has(el.dataset.id)));
+  document.querySelectorAll('#chips .badge').forEach(b=>b.classList.toggle('on',(b.dataset.l||'')===(sel||'')&&(sel?true:b.classList.contains('chip-all'))));
+}
+const badge=(id,sm)=>`<button class="badge${sm?' sm':''}" data-l="${id}" style="background:${LINE[id].c};color:${LINE[id].fg}">${id}</button>`;
+const term=id=>N[id].name;
+const zoomUi=$('#zoom');
+function liftZoom(){zoomUi.style.bottom=(innerWidth<700&&sheet.style.display==='block')?(sheet.offsetHeight+24)+'px':''}
+function closeSheet(){sheet.style.display='none';sheet.dataset.m='';curSt=null;bdSt=null;guideSeq++;busUi();liftZoom()}
+function openSheet(h){sheet.innerHTML='<div class="grab"></div>'+h;sheet.dataset.m='';sheet.style.display='block';sheet.classList.remove('in');void sheet.offsetWidth;sheet.classList.add('in');sheet.scrollTop=0;liftZoom()}
+function showLine(id){
+  const L=LINE[id],st=L.stops,cnt=st.filter(s=>N[s].t==1).length;
+  openSheet(`<div class="sh-h"><div class="ttl">${badge(id)}<h2>${L.n}</h2></div><button class="x" aria-label="Fermer">✕</button></div>
+  <div class="sub">${cnt} gares · ${term(st[0])} ⇄ ${term(st[st.length-1])}</div>
+  <ol class="st" style="--lc:${L.c}">${st.map((s,i)=>{const o=(S2L[s]||[]).filter(x=>x!==id);return `<li data-st="${s}" class="${i==0||i==st.length-1?'t':''}"><span>${N[s].name}${N[s].air?' ✈':''}</span><span class="bs">${o.map(x=>badge(x,1)).join('')}</span></li>`}).join('')}</ol>`);
+}
+function showStation(id){
+  const n=N[id],ls=S2L[id]||[];
+  const nb=ls.map(l=>{const st=LINE[l].stops,i=st.indexOf(id),p=st[i-1],q=st[i+1];
+    return `<li>${badge(l,1)}<span>${p?`← <a data-st="${p}">${N[p].name}</a>`:'<i style="color:#8a99b5">terminus</i>'}${q?` &nbsp;·&nbsp; <a data-st="${q}">${N[q].name}</a> →`:' &nbsp;·&nbsp; <i style="color:#8a99b5">terminus</i>'}</span></li>`}).join('');
+  openSheet(`<div class="sh-h"><h2>${n.name}${n.air?' ✈':''}</h2><button class="x" aria-label="Fermer">✕</button></div>
+  <div class="sub">${ls.length>1?ls.length+' lignes':'1 ligne'}</div>
+  <div class="row">${ls.map(l=>badge(l)).join('')}</div><div id="board"></div><ul class="nb">${nb}</ul><div class="guide" id="guide"><h3>Guide de la gare</h3><div class="skel" style="width:70%"></div><div class="skel" style="width:50%"></div></div>`);
+  loadGuide(id);boardOpen(id);busUi();
+  liftZoom();
+}
+
+/* ---- guide de la gare : API ressources.data.sncf.com (Explore v2.1, jeu « gares-de-voyageurs ») ---- */
+const API='https://ressources.data.sncf.com/api/explore/v2.1/catalog/datasets/gares-de-voyageurs/records';
+const gcache=new Map();let guideSeq=0;
+const pick=(r,keys)=>{for(const k of keys){const v=r[k];if(v!=null&&v!==''&&typeof v!=='object')return v}return null};
+async function fetchGare(name){
+  const key=name.split(/ [-\/] /)[0].trim();
+  if(gcache.has(key))return gcache.get(key);
+  const u=API+'?limit=10&q='+encodeURIComponent(key);
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);
+  try{
+    const r=await fetch(u,{signal:ctl.signal});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json(),list=j.results||[];
+    const nk=norm(key);
+    const nameOf=x=>norm(String(pick(x,['nom','libelle','nom_gare','libellegare'])||''));
+    const hit=list.find(x=>nameOf(x)===nk)||list.find(x=>nameOf(x).includes(nk))||null;
+    gcache.set(key,hit);return hit;
+  }finally{clearTimeout(to)}
+}
+async function loadGuide(id){
+  const my=++guideSeq,box=$('#guide');if(!box)return;
+  try{
+    const g=await fetchGare(N[id].name);
+    if(my!==guideSeq)return;
+    const rows=[['Commune',pick(g||{},['commune','libellecommune','libelle_commune'])],
+      ['Département',pick(g||{},['departement','departement_libelle','libelledepartement','nom_departement'])],
+      ['Code UIC',pick(g||{},['codes_uic','code_uic','uic_code','uic'])],
+      ['Catégorie',pick(g||{},['segment_drg','segmentdrg','segment'])]].filter(r=>r[1]);
+    box.innerHTML='<h3>Guide de la gare</h3>'+(rows.length?`<dl class="kv">${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`:'<p class="empty">Aucune fiche trouvée pour cette gare dans les données SNCF.</p>');
+  }catch(e){
+    if(my!==guideSeq)return;
+    box.innerHTML='<h3>Guide de la gare</h3><p class="empty">Données SNCF indisponibles pour le moment. Vérifiez votre connexion et rouvrez la gare.</p>';
+  }
+  liftZoom();
+}
+function selectLine(id,fromChip){
+  if(fromChip&&sel===id){sel=null;closeSheet();paint();return}
+  sel=id;curSt=null;showLine(id);paint();
+}
+function focusStation(id){
+  const n=N[id];curSt=id;
+  if(n.t==1)showStation(id);
+  paint();
+  const r=stage.getBoundingClientRect(),k=Math.max(TT.k,1.25);
+  tween(k,r.width/2-n.x*k,r.height*.34-n.y*k);
+}
+sheet.addEventListener('click',e=>{
+  if(e.target.closest('.x')){closeSheet();paint();return}
+  const b=e.target.closest('[data-l]');if(b){selectLine(b.dataset.l,false);return}
+  const s=e.target.closest('[data-st]');if(s)focusStation(s.dataset.st);
+});
+svg.addEventListener('click',e=>{
+  if(moved)return;
+  const s=e.target.closest('.stn');
+  if(s){focusStation(s.dataset.id);return}
+  const h=e.target.closest('.hit');
+  if(h){
+    const ed=E.get(h.dataset.e),p=rel(e),mx=(p.x-TT.x)/TT.k,my=(p.y-TT.y)/TT.k,A=N[ed.a];
+    const proj=(mx-A.x)*ed.nx+(my-A.y)*ed.ny,n=ed.ls.length;
+    const i=Math.max(0,Math.min(n-1,Math.round(proj/ed.sw+(n-1)/2)));
+    selectLine(ed.ls[i],false);return;
+  }
+  sel=null;closeSheet();paint();
+});
+
+/* ---- puces lignes ---- */
+$('#chips').innerHTML=`<button class="badge chip-all on" data-all="1">Toutes</button>`+LINES.map(L=>badge(L.id)).join('');
+$('#chips').addEventListener('click',e=>{
+  const b=e.target.closest('.badge');if(!b)return;
+  if(b.dataset.all){sel=null;closeSheet();paint();return}
+  selectLine(b.dataset.l,true);
+});
+
+/* ---- recherche ---- */
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const LIST=Object.values(N).filter(n=>n.t>=1&&(n.t==2||S2L[n.id])).map(n=>({id:n.id,name:n.name,k:norm(n.name)}));
+const q=$('#q'),res=$('#res');
+q.addEventListener('input',()=>{
+  const v=norm(q.value.trim());
+  if(!v){res.style.display='none';return}
+  const m=LIST.filter(x=>x.k.includes(v)).sort((a,b)=>a.k.indexOf(v)-b.k.indexOf(v)).slice(0,8);
+  res.innerHTML=m.length?m.map(x=>`<button data-id="${x.id}"><span>${x.name}</span><span class="bs">${(S2L[x.id]||[]).map(l=>badge(l,1).replace('<button','<span').replace('</button>','</span>')).join('')}</span></button>`).join(''):'<button disabled>Aucune gare</button>';
+  res.style.display='block';
+});
+res.addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;res.style.display='none';q.value='';q.blur();focusStation(b.dataset.id)});
+document.addEventListener('click',e=>{if(!e.target.closest('.search'))res.style.display='none'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sel=null;closeSheet();paint();res.style.display='none'}});
+
+
+/* ===================== HORAIRES : DÉPARTS (bleu) / ARRIVÉES (vert) ===================== */
+/* Données : horaires-paca.json (généré par build_horaires.py). Sans fichier, une grille théorique de démonstration s'affiche. */
+var H=null,Hdemo=false,Hnote='',Hready=false,bdSt=null,bdTab='d',bdDay=0,bdMax=8,demoCache={},lastMin=-1;
+const pad=n=>String(n).padStart(2,'0');
+const hh=m=>pad(Math.floor(m/60)%24)+'h'+pad(m%60);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isoToday=()=>{const t=new Date();return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate())};
+function demoStation(id){
+  if(demoCache[id])return demoCache[id];
+  const d=[],a=[],full=(1<<14)-1;
+  (S2L[id]||[]).forEach(lid=>{
+    const st=LINE[lid].stops;
+    [1,-1].forEach(dir=>{
+      const seq=dir>0?st:st.slice().reverse(),i=seq.indexOf(id);
+      if(i<0)return;
+      const hw=st.length>22?30:60,base=300+((lid.charCodeAt(0)*7+lid.charCodeAt(lid.length-1)*3)%25)+(dir<0?12:0);
+      const dest=N[seq[seq.length-1]].name,orig=N[seq[0]].name;
+      const sp=ar=>ar.length<=2?ar:[ar[Math.floor(ar.length/3)],ar[Math.floor(2*ar.length/3)]];
+      const nxt=sp(seq.slice(i+1,-1).filter(s=>N[s].t==1)),prv=sp(seq.slice(1,i).filter(s=>N[s].t==1));
+      for(let s0=base;s0<1380;s0+=hw){
+        const t=s0+i*3;if(t>=1440)break;
+        if(i<seq.length-1)d.push([t,dest,'',full,nxt,'TER']);
+        if(i>0)a.push([t-1,orig,'',full,prv,'TER']);
+      }
+    });
+  });
+  const by=(x,y)=>x[0]-y[0];d.sort(by);a.sort(by);
+  return demoCache[id]={d,a};
+}
+function dayIdx(add,start){
+  const t=new Date(),tu=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())+add*864e5,[y,m,d]=start.split('-').map(Number);
+  return Math.round((tu-Date.UTC(y,m-1,d))/864e5);
+}
+function boardOpen(id){bdSt=id;bdMax=8;boardRender()}
+function boardRender(){
+  const box=document.getElementById('board');if(!box||!bdSt)return;
+  const id=bdSt,name=N[id].name;
+  if(!Hready){box.innerHTML='<div class="skel tall"></div>';return}
+  const start=Hdemo?isoToday():H.start,days=Hdemo?14:H.days;
+  const data=Hdemo?demoStation(id):(H.stations[id]||null);
+  const dayChips=[];
+  for(let k=0;k<7;k++){const ix=dayIdx(k,start);if(ix<0||ix>=days)continue;
+    const dt=new Date(Date.now()+k*864e5);
+    dayChips.push(`<button class="bd-day${k===bdDay?' on':''}" data-bd="${k}">${k===0?'Auj.':k===1?'Dem.':dt.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'})}</button>`)}
+  const now=new Date(),nowM=now.getHours()*60+now.getMinutes();
+  let rows='';
+  if(!dayChips.length){
+    rows=`<div class="bd-r empty">Les horaires du fichier sont périmés. Relance <b>build_horaires.py</b> pour les mettre à jour.</div>`;
+  }else if(!data){
+    rows=`<div class="bd-r empty">Cette gare n'a pas été rapprochée dans le fichier d'horaires (voir OVERRIDES dans build_horaires.py).</div>`;
+  }else{
+    if(bdDay>=dayChips.length)bdDay=0;
+    const ix=dayIdx(bdDay,start);
+    const all=(data[bdTab]||[]).filter(e=>((e[3]>>ix)&1)&&(bdDay>0||e[0]>=nowM));
+    const shown=all.slice(0,bdMax);
+    rows=shown.length?shown.map(e=>{
+      const via=(e[4]||[]).map(s=>N[s]&&N[s].name).filter(Boolean).join(' • ');
+      return `<div class="bd-r"><div class="bd-ty"><b>${esc(e[5]||'TER')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${via?`<em>${esc(via)}</em>`:''}</div></div>`}).join('')
+      :`<div class="bd-r empty">${bdDay===0?'Plus de '+(bdTab==='d'?'départs':'arrivées')+' aujourd\'hui. Essaie « Dem. ».':'Aucun horaire ce jour-là.'}</div>`;
+    var more=all.length>bdMax?`<button class="bd-more" data-bm="1">Voir plus (${all.length-bdMax})</button>`:'';
+  }
+  const note=Hdemo?`<p class="bd-note warn">${Hnote==='old'?'Fichier horaires-paca.json à l\'ancien format : relance build_horaires.py.':'Horaires de démonstration (grille théorique, sans numéros de train).'} Pour les vrais horaires SNCF, place <b>horaires-paca.json</b> à côté de la page.</p>`
+    :`<p class="bd-note">Horaires théoriques SNCF (données du ${new Date(H.generated).toLocaleDateString('fr-FR')}). Retards et suppressions non pris en compte.</p>`;
+  const cls=bdTab;
+  box.innerHTML=`<div class="bd-tabs"><button class="bd-tab d${bdTab==='d'?' on':''}" data-bt="d">Départs</button><button class="bd-tab a${bdTab==='a'?' on':''}" data-bt="a">Arrivées</button></div>
+  ${dayChips.length>1?`<div class="bd-days">${dayChips.join('')}</div>`:''}
+  <div class="bd ${cls}"><div class="bd-body">${rows}</div><div class="bd-side"><span>${bdTab==='d'?'départs':'arrivées'}</span></div><div class="bd-f"><span>Bienvenue en gare de ${esc(name)}</span><span class="bd-clk" id="bdclk"></span></div></div>
+  ${typeof more!=='undefined'?more:''}${note}`;
+  clockTick();liftZoom();
+}
+function clockTick(){
+  const c=document.getElementById('bdclk'),t=new Date();
+  if(c)c.innerHTML=pad(t.getHours())+' '+pad(t.getMinutes())+'<small>'+pad(t.getSeconds())+'</small>';
+  const m=t.getHours()*60+t.getMinutes();
+  if(m!==lastMin){lastMin=m;if(bdSt&&Hready&&bdDay===0)boardRender()}
+}
+setInterval(clockTick,1000);
+sheet.addEventListener('click',e=>{
+  const t=e.target.closest('[data-bt],[data-bd],[data-bm]');if(!t)return;
+  if(t.dataset.bt){bdTab=t.dataset.bt;bdMax=8}
+  else if(t.dataset.bd!==undefined){bdDay=+t.dataset.bd;bdMax=8}
+  else bdMax+=10;
+  boardRender();
+});
+fetch('horaires-paca.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()})
+  .then(j=>{if(j&&j.v===2&&j.stations)H=j;else{Hdemo=true;Hnote='old'}})
+  .catch(()=>{Hdemo=true;Hnote='none'})
+  .finally(()=>{Hready=true;boardRender()});
+
+/* ===================== MENU BUS ALPES-MARITIMES (liste) ===================== */
+const ZOU_EX=[{n:'51',d:'Nice - Digne-les-Bains'},{n:'60',d:'Nice - Aix-en-Provence'},{n:'80',d:'Nice Aéroport - Monaco - Menton'},{n:'81',d:'Nice Aéroport - Cannes'},{n:'82',d:'Nice Aéroport - Vallauris'},{n:'83',d:'Valberg - Beuil - Nice'},{n:'90',d:'Saint-Raphaël - Fréjus - Mandelieu - Nice'}];
+const ZOU_PX=[{n:'600',d:'Nice - Monaco - Menton'},{n:'601',d:'Nice - Monaco - Menton'},{n:'602',d:'Nice - Èze village - Monaco'},{n:'603',d:'Nice - La Turbie - Peille - Monaco'},{n:'604',d:'Peille - La Turbie - Monaco'},{n:'605',d:'Èze - La Turbie - Monaco'},{n:'610',d:'Nice - La Grave de Contes'},{n:'611',d:'La Grave de Contes - Sclos Saint-Hélène'},{n:'612',d:'La Grave de Contes - Berre-les-Alpes'},{n:'613',d:'La Grave de Contes - Coaraze'},{n:'614',d:"Gare de Drap / Cantaron - Touët-de-l'Escarène"},{n:'615',d:'Nice - Escarène / Lucéram'},{n:'616',d:'Nice - Escarène / Lucéram'},{n:'617',d:'La Grave de Contes - Châteauneuf-Villevieille'},{n:'620',d:'Nice - Cannes'},{n:'621',d:'Nice - Cannes'},{n:'622',d:'Nice - Villeneuve-Loubet'},{n:'629',d:'La Roquette - Mougins'},{n:'630',d:'Nice - Sophia'},{n:'631',d:'Nice - Sophia'},{n:'632',d:'Nice - Sophia'},{n:'636',d:'Vence - Sophia'},{n:'637',d:'Saint-Laurent - Sophia'},{n:'650',d:'Grasse - Nice'},{n:'651',d:'Grasse - Vence'},{n:'652',d:'Grasse - Gréolières'},{n:'653',d:'Grasse - Valbonne - Sophia / Antibes'},{n:'654',d:'Valbonne - Z.I. Carros - Vence'},{n:'655',d:'Cagnes - Vence par St Paul'},{n:'660',d:'Grasse - Cannes'},{n:'661',d:'Grasse - Cannes'},{n:'662',d:'Grasse - Cannes'},{n:'663',d:'Cannes - Valbonne'},{n:'664',d:'Cannes - Sophia'},{n:'670',d:'Valberg - Nice'},{n:'671',d:'Bouyon - Carros - Manda - Nice Cadam'},{n:'672',d:'Sigale - Gilette - Nice Grand Arénas'},{n:'675',d:'Guillaumes - Puget-Théniers - Nice Grand Arénas'}];
+const zl=(a,c)=>'<ul class="zl">'+a.map(x=>`<li><span class="bl ${c}">Ligne ${x.n}</span><span>${esc(x.d)}</span></li>`).join('')+'</ul>';
+function busUi(){const b=document.getElementById('busbtn');if(b)b.classList.toggle('on',sheet.style.display==='block'&&sheet.dataset.m==='bus')}
+document.getElementById('busbtn').addEventListener('click',()=>{
+  if(sheet.style.display==='block'&&sheet.dataset.m==='bus'){closeSheet();paint();return}
+  sel=null;bdSt=null;curSt=null;paint();
+  openSheet(`<div class="sh-h"><div class="zou-h" style="flex:1"><b>Réseau ZOU ! — Alpes-Maritimes</b><small>Récapitulatif des lignes et destinations</small></div><button class="x" aria-label="Fermer">✕</button></div>
+  <div class="zou"><h3>Lignes Express</h3>${zl(ZOU_EX,'ex')}<h3>Lignes de Proximité</h3>${zl(ZOU_PX,'')}</div>`);
+  sheet.dataset.m='bus';busUi();
+});
+
+window.addEventListener('resize',()=>{liftZoom();if(!ptrs.size){const k=TT.k/fitK;fit();if(k>1.02){TT.k=fitK*k;apply()}}});
+fit();paint();
+</script>
+</body>
+</html>
