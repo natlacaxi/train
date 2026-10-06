@@ -166,7 +166,9 @@ def main():
 
     # 4) Lignes TER (+ type de train pour l'affichage)
     def kind(txt):
-        if re.search(r"TGV|INOUI|OUIGO", txt, re.I): return "TGV"
+        if re.search(r"OUIGO", txt, re.I): return "OUIGO"
+        if re.search(r"INOUI", txt, re.I): return "INOUI"
+        if re.search(r"\bTGV\b", txt, re.I): return "TGV"
         if re.search(r"INTERCIT", txt, re.I): return "INTERCITÉS"
         if re.search(r"\bTER\b", txt, re.I): return "TER"
         return ""
@@ -217,9 +219,11 @@ def main():
     for tid, rs in rows.items():
         rs.sort()
         service, num, typ = trips[tid]
+        first, last = rs[0], rs[-1]
+        if not typ:
+            typ = kind(first[1])  # les ids d'arrêts SNCF contiennent le produit (OCEOUIGO, OCETGV INOUI, OCETrain TER…)
         if not typ and len(re.sub(r"\D", "", num)) >= 5:
             typ = "TER"  # numéros à 5-6 chiffres = TER (repli quand la route n'indique pas le type)
-        first, last = rs[0], rs[-1]
         mapped = [x for x in rs if x[1] in stop_to_map]
         for idx, x in enumerate(mapped):
             seq, stop_id, arr, dep, pu, do = x
@@ -251,6 +255,7 @@ def main():
         "start": start.isoformat(),
         "days": days,
         "source": "SNCF Open Data (ODbL) - horaires-sncf",
+        "stopmap": {k: v for k, v in stop_to_map.items()},
         "stations": {sid: {"d": pack(v["d"]), "a": pack(v["a"])} for sid, v in out.items()},
     }
     with open(a.out, "w", encoding="utf-8") as f:
