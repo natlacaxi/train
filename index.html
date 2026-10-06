@@ -624,7 +624,7 @@ function boardRender(){
     const shown=all.slice(0,bdMax);
     rows=shown.length?shown.map(e=>{
       const via=(e[4]||[]).map(s=>N[s]&&N[s].name).filter(Boolean).join(' • ');
-      return `<div class="bd-r"><div class="bd-ty"><b>${esc(e[5]||'TER')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${via?`<em>${esc(via)}</em>`:''}</div></div>`}).join('')
+      return `<div class="bd-r"><div class="bd-ty"><b>${esc(e[5]||'')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${via?`<em>${esc(via)}</em>`:''}</div></div>`}).join('')
       :`<div class="bd-r empty">${bdDay===0?'Plus de '+(bdTab==='d'?'départs':'arrivées')+' aujourd\'hui. Essaie « Dem. ».':'Aucun horaire ce jour-là.'}</div>`;
     var more=all.length>bdMax?`<button class="bd-more" data-bm="1">Voir plus (${all.length-bdMax})</button>`:'';
   }
