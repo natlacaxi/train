@@ -1,0 +1,40 @@
+name: Incidents
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # toutes les 30 min (GitHub peut décaler de quelques minutes)
+  workflow_dispatch:          # bouton « Run workflow »
+
+permissions:
+  contents: write
+
+concurrency:
+  group: donnees-site
+  cancel-in-progress: false
+
+jobs:
+  incidents:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install gtfs-realtime-bindings
+      - name: Générer incidents.json
+        run: |
+          if [ ! -f horaires-paca.json ]; then echo "::error::horaires-paca.json absent : lance d'abord « Mise à jour des horaires »"; exit 1; fi
+          python3 build_incidents.py 2>&1 | tee log.txt
+          if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+            echo "::error::Script en échec : $(tail -n 3 log.txt | tr '\n' ' ')"
+            exit 1
+          fi
+      - name: Publier le fichier
+        run: |
+          git config user.name "horaires-bot"
+          git config user.email "horaires-bot@users.noreply.github.com"
+          git add incidents.json
+          git diff --staged --quiet && exit 0
+          git commit -m "Incidents $(date -u +%FT%H:%MZ)"
+          git pull --rebase --autostash -q || true
+          git push || { echo "::error::git push refusé : vérifie Settings > Actions > General > Workflow permissions (Read and write)"; exit 1; }
