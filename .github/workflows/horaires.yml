@@ -8,9 +8,13 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: donnees-site
+  cancel-in-progress: false
+
 jobs:
   horaires:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -20,18 +24,24 @@ jobs:
         run: |
           curl -fL --retry 3 --retry-delay 5 -A "Mozilla/5.0" \
             -o gtfs.zip \
-            "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip"
+            "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip" \
+            || { echo "::error::Téléchargement du GTFS impossible (curl code $?)"; exit 1; }
           ls -lh gtfs.zip
       - name: Générer horaires-paca.json
         run: |
           HTML=$(ls index.html carte-ter*.html 2>/dev/null | head -1)
           if [ -z "$HTML" ]; then echo "::error::Ni index.html ni carte-ter.html à la racine du dépôt"; exit 1; fi
           if [ ! -f build_horaires.py ]; then echo "::error::build_horaires.py absent de la racine du dépôt"; exit 1; fi
-          python3 build_horaires.py --gtfs gtfs.zip --html "$HTML" --out horaires-paca.json
+          python3 build_horaires.py --gtfs gtfs.zip --html "$HTML" --out horaires-paca.json 2>&1 | tee log.txt
+          if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+            echo "::error::Script en échec : $(tail -n 3 log.txt | tr '\n' ' ')"
+            exit 1
+          fi
       - name: Publier le fichier
         run: |
           git config user.name "horaires-bot"
           git config user.email "horaires-bot@users.noreply.github.com"
           git add horaires-paca.json
           git diff --staged --quiet || git commit -m "Horaires du $(date +%F)"
-          git push
+          git pull --rebase --autostash -q || true
+          git push || { echo "::error::git push refusé : vérifie Settings > Actions > General > Workflow permissions (Read and write)"; exit 1; }
