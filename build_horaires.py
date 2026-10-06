@@ -178,7 +178,8 @@ def main():
         kept = sum(1 for v in routes.values() if v[0])
         print(f"{kept}/{len(routes)} routes reconnues comme TER", file=sys.stderr)
         if kept == 0:
-            sys.exit("Aucune route TER reconnue : relance avec --all-modes ou adapte le filtre.")
+            print("Aucune route TER reconnue : repli sur toutes les routes (TGV/IC inclus).", file=sys.stderr)
+            a.all_modes = True
 
     trips = {}
     for r in read_rows(zf, "trips.txt"):
@@ -216,6 +217,8 @@ def main():
     for tid, rs in rows.items():
         rs.sort()
         service, num, typ = trips[tid]
+        if not typ and len(re.sub(r"\D", "", num)) >= 5:
+            typ = "TER"  # numéros à 5-6 chiffres = TER (repli quand la route n'indique pas le type)
         first, last = rs[0], rs[-1]
         mapped = [x for x in rs if x[1] in stop_to_map]
         for idx, x in enumerate(mapped):
