@@ -8,6 +8,11 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0384c6">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TER PACA">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Plan du réseau TER – Provence-Alpes-Côte d'Azur</title>
 <style>
 :root{
@@ -261,7 +266,7 @@ ul.zl li:last-child{border-bottom:0}
   background:var(--panel);border:1px solid var(--bd);border-radius:99px;padding:6px 14px;box-shadow:var(--shadow);cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap}
 #livepill i{width:9px;height:9px;border-radius:50%;background:#16934d;animation:blink 1.4s infinite}
 @keyframes blink{50%{opacity:.25}}
-@media(max-width:700px){#livepill{bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 112px);left:12px;transform:none}}
+@media(max-width:700px){#livepill{bottom:44px;top:auto;left:12px;transform:none}#instbar{bottom:84px}}
 #setbtn svg{color:#475569}#setbtn.on{border-color:#475569}
 .set-h{flex:1;background:linear-gradient(135deg,#1e293b,#475569);color:#fff;border-radius:14px;padding:13px 16px;margin:8px 0 4px}
 .set-h b{display:block;font-size:18px}.set-h small{opacity:.9;font-size:12.5px}
@@ -307,6 +312,48 @@ table.cmp th{font-size:12px;color:var(--muted);font-weight:800;text-transform:up
 table.cmp td.t{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
 table.cmp tr.sum td{background:var(--chip);font-weight:700}
 .dl-p{color:#b45309}.dl-m{color:#15803d}
+
+/* ===== petits écrans : boutons sur une 2e ligne ===== */
+@media(max-width:700px){
+  .top{flex-wrap:wrap}
+  .search{flex:1 1 calc(100% - 56px)}
+  .hdbtn{flex:1 1 0;justify-content:center;min-width:0;padding:0 6px}
+}
+#tpbtn svg{color:#0f766e}#tpbtn.on{border-color:#0f766e}
+/* marques TGV */
+.bd-r[data-k="INOUI"]{box-shadow:inset 6px 0 0 #8b3fd0}
+.bd-r[data-k="OUIGO"]{box-shadow:inset 6px 0 0 #ff2fa0}
+.bd-ty b.k-INOUI{text-transform:none;font-size:12px;letter-spacing:0}
+.bd-types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.bd-types button{border:1px solid var(--bd);background:var(--chip);border-radius:99px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;gap:6px;align-items:center;color:var(--ink)}
+.bd-types button small{opacity:.65;font-weight:700}
+.bd-types button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bd-types button.k-INOUI.on{background:#6b2fa3;border-color:#6b2fa3;color:#fff}.bd-types button.k-OUIGO.on{background:#e6007e;border-color:#e6007e;color:#fff}
+.tgv-kb small{opacity:.8;margin-left:4px;font-weight:700}
+.tgv-kb.k-INOUI{color:#6b2fa3}.tgv-kb.k-OUIGO{color:#e6007e}.tgv-kb.on{color:#fff}
+/* recherche de trajet */
+.tp-h{flex:1;background:linear-gradient(135deg,#0f766e,#0e9f8e);color:#fff;border-radius:14px;padding:13px 16px;margin:8px 0 4px}
+.tp-h b{display:block;font-size:18px}.tp-h small{opacity:.92;font-size:12.5px}
+.tp-f{margin:10px 0 4px}
+.tp-st{position:relative;display:flex;flex-direction:column;gap:8px;padding-right:50px}
+.tp-st input,.tp-row select,.tp-row input{height:46px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);color:var(--ink);font:inherit;font-size:15px;padding:0 12px;min-width:0}
+.tp-sw{position:absolute;right:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:1.5px solid var(--bd);background:var(--chip);font-size:19px;cursor:pointer;color:var(--ink)}
+.tp-row{display:flex;gap:8px;margin:8px 0}.tp-row select{flex:1}.tp-row input{width:122px}
+.tp-r{border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin:10px 0;background:var(--chip)}
+.tp-t{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tp-t b{font-size:22px;font-variant-numeric:tabular-nums}.tp-t em{font-style:normal;color:var(--muted);font-weight:700;font-size:13.5px}
+.tp-c{margin-left:auto;font-size:11.5px;font-weight:800;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:#d1fae5;color:#065f46}
+.tp-c.x{background:#fde68a;color:#78350f}
+.tp-leg{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:var(--panel);border-radius:10px;padding:8px 9px;margin-top:7px;font:inherit;color:var(--ink);cursor:pointer;border:1px solid var(--bd)}
+.tp-n{font-weight:800;font-variant-numeric:tabular-nums}
+.tp-s{display:flex;flex-direction:column;min-width:0;font-size:13.5px;font-weight:650}
+.tp-s small{color:var(--muted);font-weight:600;font-size:12px}
+.tp-x{margin-top:7px;font-size:12.5px;color:var(--muted);padding-left:4px}
+.cmp-row[hidden]{display:none}
+/* installation */
+#instbar{left:12px;bottom:44px;z-index:4;display:none;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:8px 8px 8px 14px;box-shadow:var(--shadow);font-size:13.5px;font-weight:700;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#instbar button{height:36px;border-radius:10px;border:0;font-weight:750;cursor:pointer;padding:0 14px;background:#1b7be6;color:#fff}
+#instbar button.x2{background:none;color:var(--muted);padding:0 8px;font-size:16px}
 </style>
 </head>
 <body>
@@ -327,6 +374,7 @@ table.cmp tr.sum td{background:var(--chip);font-weight:700}
         <input id="q" type="search" placeholder="Rechercher une gare" autocomplete="off" aria-label="Rechercher une gare">
         <div id="res"></div>
       </div>
+      <button class="busbtn hdbtn" id="tpbtn" aria-label="Rechercher un trajet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="5" r="2.2"/><path d="M8.2 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.8"/></svg><span class="t">Trajet</span></button>
       <button class="busbtn hdbtn" id="busbtn" aria-label="Bus Alpes-Maritimes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v2.5M16 17v2.5"/><circle cx="8" cy="14" r=".6" fill="currentColor"/><circle cx="16" cy="14" r=".6" fill="currentColor"/></svg><span class="t">Bus 06</span></button>
       <button class="busbtn hdbtn" id="tgvbtn" aria-label="TGV INOUI et OUIGO"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M6 11h12M8 21l2-2M16 21l-2-2"/><circle cx="9" cy="15" r=".7" fill="currentColor"/><circle cx="15" cy="15" r=".7" fill="currentColor"/></svg><span class="t">TGV</span></button>
       <button class="busbtn hdbtn" id="incbtn" aria-label="Incidents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span class="t">Incidents</span><i class="cnt" id="incn"></i></button>
@@ -787,8 +835,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){sel=null;closeSheet
 
 /* ===================== HORAIRES : DÉPARTS (bleu) / ARRIVÉES (vert) ===================== */
 /* Données : horaires-paca.json (généré par build_horaires.py). Sans fichier, une grille théorique de démonstration s'affiche. */
-var H=null,Hdemo=false,Hnote='',Hready=false,bdSt=null,bdTab='d',bdDay=0,bdMax=8,demoCache={},lastMin=-1,bdKind=null,INC=null;
+var H=null,Hdemo=false,Hnote='',Hready=false,bdSt=null,bdTab='d',bdDay=0,bdMax=8,demoCache={},lastMin=-1,bdKind=null,bdType=null,INC=null;
 const pad=n=>String(n).padStart(2,'0');
+const tl=t=>t==='INOUI'?'inOui':t==='INTERCITÉS'?'Intercités':(t||'');
 const hh=m=>pad(Math.floor(m/60)%24)+'h'+pad(m%60);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const isoToday=()=>{const t=new Date();return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate())};
@@ -818,13 +867,14 @@ function dayIdx(add,start){
   const t=new Date(),tu=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())+add*864e5,[y,m,d]=start.split('-').map(Number);
   return Math.round((tu-Date.UTC(y,m-1,d))/864e5);
 }
-function boardOpen(id){bdKind=null;bdSt=id;bdMax=8;boardRender()}
+function boardOpen(id){bdKind=null;bdType=null;bdSt=id;bdMax=8;boardRender()}
 function boardRender(){
   const box=document.getElementById('board');if(!box||!bdSt)return;
   const id=bdSt,name=N[id].name;
   if(!Hready){box.innerHTML='<div class="skel tall"></div>';return}
   const start=Hdemo?isoToday():H.start,days=Hdemo?14:H.days;
   const data=Hdemo?demoStation(id):(H.stations[id]||null);
+  let typeChips='';
   const dayChips=[];
   for(let k=0;k<7;k++){const ix=dayIdx(k,start);if(ix<0||ix>=days)continue;
     const dt=new Date(Date.now()+k*864e5);
@@ -838,12 +888,16 @@ function boardRender(){
   }else{
     if(bdDay>=dayChips.length)bdDay=0;
     const ix=dayIdx(bdDay,start);
-    const all=(data[bdTab]||[]).filter(e=>((e[3]>>ix)&1)&&(bdDay>0||e[0]>=nowM)&&(!bdKind||bdKind.includes(e[5])));
+    const baseL=(data[bdTab]||[]).filter(e=>((e[3]>>ix)&1)&&(bdDay>0||e[0]>=nowM)&&(!bdKind||bdKind.includes(e[5])));
+    const cnt={};baseL.forEach(e=>{const k=e[5]||'TER';cnt[k]=(cnt[k]||0)+1});
+    const tk=Object.keys(cnt);if(bdType&&!cnt[bdType])bdType=null;
+    typeChips=(!bdKind&&tk.length>1)?`<div class="bd-types"><button data-bk="" class="${bdType?'':'on'}">Tous</button>${tk.sort().map(k=>`<button data-bk="${esc(k)}" class="k-${esc(k)}${bdType===k?' on':''}">${esc(tl(k))} <small>${cnt[k]}</small></button>`).join('')}</div>`:'';
+    const all=baseL.filter(e=>!bdType||(e[5]||'TER')===bdType);
     const shown=all.slice(0,bdMax);
     rows=shown.length?shown.map(e=>{
       const via=(e[4]||[]).map(s=>N[s]&&N[s].name).filter(Boolean).join(' • ');
       const inc=INC&&INC.by&&e[2]&&INC.by[e[2]];
-      return `<div class="bd-r"><div class="bd-ty"><b class="k-${esc(e[5]||'')}">${esc(e[5]||'')}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${(inc||via)?`<em>${inc?`<span class="bd-tag s-${esc(inc.sev||'lo')}">${esc(inc.effect||'Perturbé')}</span>`:''}${esc(via)}</em>`:''}</div></div>`}).join('')
+      return `<div class="bd-r" data-k="${esc(e[5]||'')}"><div class="bd-ty"><b class="k-${esc(e[5]||'')}">${esc(tl(e[5]||''))}</b><i>${esc(e[2]||'')}</i></div><div class="bd-t">${hh(e[0])}</div><div class="bd-d"><strong>${esc(e[1])}</strong>${(inc||via)?`<em>${inc?`<span class="bd-tag s-${esc(inc.sev||'lo')}">${esc(inc.effect||'Perturbé')}</span>`:''}${esc(via)}</em>`:''}</div></div>`}).join('')
       :`<div class="bd-r empty">${bdDay===0?'Plus de '+(bdTab==='d'?'départs':'arrivées')+' aujourd\'hui. Essaie « Dem. ».':'Aucun horaire ce jour-là.'}</div>`;
     var more=all.length>bdMax?`<button class="bd-more" data-bm="1">Voir plus (${all.length-bdMax})</button>`:'';
   }
@@ -851,9 +905,9 @@ function boardRender(){
     :`<p class="bd-note">Horaires théoriques SNCF (données du ${new Date(H.generated).toLocaleDateString('fr-FR')}). Retards et suppressions non pris en compte.</p>`;
   const cls=bdTab;
   box.innerHTML=`<div class="bd-tabs"><button class="bd-tab d${bdTab==='d'?' on':''}" data-bt="d">Départs</button><button class="bd-tab a${bdTab==='a'?' on':''}" data-bt="a">Arrivées</button></div>
-  ${dayChips.length>1?`<div class="bd-days">${dayChips.join('')}</div>`:''}
+  ${dayChips.length>1?`<div class="bd-days">${dayChips.join('')}</div>`:''}${typeChips}
   <div class="bd ${cls}"><div class="bd-body">${rows}</div><div class="bd-side"><span>${bdTab==='d'?'départs':'arrivées'}</span></div><div class="bd-f"><span>Bienvenue en gare de ${esc(name)}</span><span class="bd-clk" id="bdclk"></span></div></div>
-  ${typeof more!=='undefined'?more:''}${note}`;
+  ${typeof more!=='undefined'?more:''}${note}${bdKind?'':`<div class="cmp-row"><button class="cmp-b alt" data-tp="from">Trajet depuis ici</button><button class="cmp-b alt" data-tp="to">Trajet vers ici</button></div>`}`;
   clockTick();liftZoom();
 }
 function clockTick(){
@@ -864,8 +918,9 @@ function clockTick(){
 }
 setInterval(clockTick,1000);
 sheet.addEventListener('click',e=>{
-  const t=e.target.closest('[data-bt],[data-bd],[data-bm]');if(!t)return;
-  if(t.dataset.bt){bdTab=t.dataset.bt;bdMax=8}
+  const t=e.target.closest('[data-bt],[data-bd],[data-bm],[data-bk]');if(!t)return;
+  if(t.dataset.bk!==undefined){bdType=t.dataset.bk||null;bdMax=8}
+  else if(t.dataset.bt){bdTab=t.dataset.bt;bdMax=8}
   else if(t.dataset.bd!==undefined){bdDay=+t.dataset.bd;bdMax=8}
   else bdMax+=10;
   boardRender();
@@ -879,7 +934,7 @@ fetch('horaires-paca.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return 
 const ZOU_EX=[{n:'51',d:'Nice - Digne-les-Bains'},{n:'60',d:'Nice - Aix-en-Provence'},{n:'80',d:'Nice Aéroport - Monaco - Menton'},{n:'81',d:'Nice Aéroport - Cannes'},{n:'82',d:'Nice Aéroport - Vallauris'},{n:'83',d:'Valberg - Beuil - Nice'},{n:'90',d:'Saint-Raphaël - Fréjus - Mandelieu - Nice'}];
 const ZOU_PX=[{n:'600',d:'Nice - Monaco - Menton'},{n:'601',d:'Nice - Monaco - Menton'},{n:'602',d:'Nice - Èze village - Monaco'},{n:'603',d:'Nice - La Turbie - Peille - Monaco'},{n:'604',d:'Peille - La Turbie - Monaco'},{n:'605',d:'Èze - La Turbie - Monaco'},{n:'610',d:'Nice - La Grave de Contes'},{n:'611',d:'La Grave de Contes - Sclos Saint-Hélène'},{n:'612',d:'La Grave de Contes - Berre-les-Alpes'},{n:'613',d:'La Grave de Contes - Coaraze'},{n:'614',d:"Gare de Drap / Cantaron - Touët-de-l'Escarène"},{n:'615',d:'Nice - Escarène / Lucéram'},{n:'616',d:'Nice - Escarène / Lucéram'},{n:'617',d:'La Grave de Contes - Châteauneuf-Villevieille'},{n:'620',d:'Nice - Cannes'},{n:'621',d:'Nice - Cannes'},{n:'622',d:'Nice - Villeneuve-Loubet'},{n:'629',d:'La Roquette - Mougins'},{n:'630',d:'Nice - Sophia'},{n:'631',d:'Nice - Sophia'},{n:'632',d:'Nice - Sophia'},{n:'636',d:'Vence - Sophia'},{n:'637',d:'Saint-Laurent - Sophia'},{n:'650',d:'Grasse - Nice'},{n:'651',d:'Grasse - Vence'},{n:'652',d:'Grasse - Gréolières'},{n:'653',d:'Grasse - Valbonne - Sophia / Antibes'},{n:'654',d:'Valbonne - Z.I. Carros - Vence'},{n:'655',d:'Cagnes - Vence par St Paul'},{n:'660',d:'Grasse - Cannes'},{n:'661',d:'Grasse - Cannes'},{n:'662',d:'Grasse - Cannes'},{n:'663',d:'Cannes - Valbonne'},{n:'664',d:'Cannes - Sophia'},{n:'670',d:'Valberg - Nice'},{n:'671',d:'Bouyon - Carros - Manda - Nice Cadam'},{n:'672',d:'Sigale - Gilette - Nice Grand Arénas'},{n:'675',d:'Guillaumes - Puget-Théniers - Nice Grand Arénas'}];
 const zl=(a,c)=>'<ul class="zl">'+a.map(x=>`<li><span class="bl ${c}">Ligne ${x.n}</span><span>${esc(x.d)}</span></li>`).join('')+'</ul>';
-const PANELS={bus:'busbtn',tgv:'tgvbtn',inc:'incbtn',set:'setbtn',cmp:'setbtn'};
+const PANELS={tp:'tpbtn',bus:'busbtn',tgv:'tgvbtn',inc:'incbtn',set:'setbtn',cmp:'setbtn'};
 function busUi(){const o=sheet.style.display==='block'?sheet.dataset.m:'';for(const m in PANELS){const b=document.getElementById(PANELS[m]);if(b)b.classList.toggle('on',o===m||(m==='set'&&o==='cmp'))}}
 function openPanel(m,html){
   if(sheet.style.display==='block'&&sheet.dataset.m===m){closeSheet();paint();return}
@@ -897,13 +952,14 @@ function tgvStations(){
 }
 function tgvHtml(){
   const ids=tgvStations();
-  const head=`<div class="sh-h"><div class="tgv-h"><b>TGV INOUI &amp; OUIGO</b><small>Départs et arrivées des grandes lignes</small></div><button class="x" aria-label="Fermer">✕</button></div>`;
+  const head=`<div class="sh-h"><div class="tgv-h"><b>TGV inOui &amp; OUIGO</b><small>Départs et arrivées des grandes lignes</small></div><button class="x" aria-label="Fermer">✕</button></div>`;
   if(!ids.length)return head+`<p class="bd-note warn">${Hdemo?'Les horaires TGV demandent le fichier horaires-paca.json : lance le workflow « Mise à jour des horaires » dans Actions.':'Aucun TGV INOUI ou OUIGO reconnu dans le fichier d\'horaires.'}</p>`;
   if(!tgvId||!ids.includes(tgvId))tgvId=ids.includes('mar')?'mar':ids[0];
-  const ks=[{k:'all',t:'Tous'},{k:'INOUI',t:'INOUI'},{k:'OUIGO',t:'OUIGO'}];
-  return head+`<div class="tgv-ctl"><select id="tgvsel" aria-label="Gare">${ids.map(i=>`<option value="${i}"${i===tgvId?' selected':''}>${esc(N[i].name)}</option>`).join('')}</select><div class="tgv-k">${ks.map(k=>`<button class="tgv-kb k-${k.k}${tgvF===k.k?' on':''}" data-tk="${k.k}">${k.t}</button>`).join('')}</div></div><div id="board"></div>`;
+  return head+`<div class="tgv-ctl"><select id="tgvsel" aria-label="Gare">${ids.map(i=>`<option value="${i}"${i===tgvId?' selected':''}>${esc(N[i].name)}</option>`).join('')}</select><div class="tgv-k">${tgvKs()}</div></div><div id="board"></div>`;
 }
-function tgvApply(){bdKind=tgvF==='all'?TGVK:[tgvF];bdSt=tgvId;bdMax=8;boardRender()}
+function tgvCnt(t){if(!H||Hdemo||!H.stations[tgvId])return 0;const ix=dayIdx(0,H.start);return H.stations[tgvId].d.filter(e=>e[5]===t&&((e[3]>>ix)&1)).length}
+function tgvKs(){return [{k:'all',t:'Tous'},{k:'INOUI',t:'inOui',n:tgvCnt('INOUI')},{k:'OUIGO',t:'OUIGO',n:tgvCnt('OUIGO')}].map(k=>`<button class="tgv-kb k-${k.k}${tgvF===k.k?' on':''}" data-tk="${k.k}">${k.t}${k.n!=null?` <small>${k.n}</small>`:''}</button>`).join('')}
+function tgvApply(){const kb=document.querySelector('.tgv-k');if(kb)kb.innerHTML=tgvKs();bdKind=tgvF==='all'?TGVK:[tgvF];bdSt=tgvId;bdMax=8;boardRender()}
 document.getElementById('tgvbtn').addEventListener('click',()=>{
   const opening=!(sheet.style.display==='block'&&sheet.dataset.m==='tgv');
   openPanel('tgv',tgvHtml());
@@ -962,12 +1018,16 @@ function pointAt(p,d){
   return{x:p.pts[i-1][0]+(p.pts[i][0]-p.pts[i-1][0])*f,y:p.pts[i-1][1]+(p.pts[i][1]-p.pts[i-1][1])*f};
 }
 function buildTrains(){
-  TRN.list=[];TRN.built=true;TRN.day=isoToday();TRN.mode=Hdemo?'demo':'real';
+  TRN.built=true;TRN.day=isoToday();TRN.mode=Hdemo?'demo':'real';
   TRN.els.forEach(o=>o.g.remove());TRN.els.clear();
+  TRN.list=makeTrips(0);
+}
+function makeTrips(addDays){
+  const LIST=[];
   const add=(num,typ,dest,pts,lid)=>{
     const u=new Set(pts.map(p=>p.sid));if(u.size<2)return;
     if(!lid){let k=0;while(k<pts.length-1&&pts[k].sid===pts[k+1].sid)k++;lid=pathBetween(pts[k].sid,pts[k+1].sid).lid}
-    TRN.list.push({num,typ,dest:dest||N[pts[pts.length-1].sid].name,pts,lid,t0:pts[0].t,t1:pts[pts.length-1].t});
+    LIST.push({num,typ,dest:dest||N[pts[pts.length-1].sid].name,pts,lid,t0:pts[0].t,t1:pts[pts.length-1].t});
   };
   if(Hdemo){
     LINES.forEach(L=>{const st=L.stops;
@@ -979,9 +1039,9 @@ function buildTrains(){
         }
       });
     });
-    return;
+    return LIST;
   }
-  const ix=dayIdx(0,H.start);if(ix<0||ix>=H.days)return;
+  const ix=dayIdx(addDays,H.start);if(ix<0||ix>=H.days)return LIST;
   const g=new Map(),kinds='d a'.split(' ');
   for(const sid in H.stations){if(!N[sid])continue;const st=H.stations[sid];
     kinds.forEach(kd=>{(st[kd]||[]).forEach(e=>{
@@ -997,6 +1057,7 @@ function buildTrains(){
     o.pts.forEach(p=>{if(cur.length&&p.t-cur[cur.length-1].t>150)flush();cur.push(p)});
     flush();
   });
+  return LIST;
 }
 function trnPos(tr,m){
   const P=tr.pts;
@@ -1052,7 +1113,7 @@ function trnTick(){
     o.pr.style.display=hot?'':'none';if(hot)o.pr.setAttribute('stroke',inc.sev==='hi'?'#e11d48':'#f59e0b');
     let lab='';
     if(showLab){
-      lab=[SET.type&&tr.typ,SET.num&&tr.num,SET.dest&&('→ '+shortN(tr.dest))].filter(Boolean).join(' ');
+      lab=[SET.type&&tl(tr.typ),SET.num&&tr.num,SET.dest&&('→ '+shortN(tr.dest))].filter(Boolean).join(' ');
       if(lab&&!(inc&&SET.perturb)){const key=Math.round(pos.x/110)+'|'+Math.round(pos.y/15);if(cells.has(key))lab='';else cells.add(key)}
     }
     if(lab!==o.lab){o.tx.textContent=lab;o.lab=lab}
@@ -1070,17 +1131,18 @@ setInterval(trnTick,1000);
 stage.insertAdjacentHTML('beforeend','<div class="ui" id="livepill" role="button" tabindex="0"><i></i><span id="livetxt"></span></div>');
 document.getElementById('livepill').addEventListener('click',()=>openPanel('set',setHtml()));
 
-function trainInfo(i){
-  const tr=TRN.list[i];if(!tr)return;
+function trainInfo(i){const tr=TRN.list[i];if(tr)trainInfoTr(tr)}
+function trainInfoTr(tr){
+  const i=TRN.list.indexOf(tr);
   const m=simMin(),rows=[];
   tr.pts.forEach(p=>{const l=rows[rows.length-1];if(l&&l.sid===p.sid)l.dep=p.t;else rows.push({sid:p.sid,arr:p.t,dep:p.t})});
   const inc=INC&&INC.by&&tr.num&&INC.by[tr.num];
-  let cur=rows.findIndex(r=>m<r.dep);if(cur<0)cur=rows.length;
+  let cur=rows.findIndex(r=>m<r.dep);if(cur<0)cur=rows.length;if(i<0)cur=-1;
   sel=null;bdSt=null;paint();
-  openSheet(`<div class="sh-h"><div class="tr-h"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tr.typ||'TER')}</span><h2>${tr.num?esc(tr.num)+' → ':'→ '}${esc(tr.dest)}</h2></div><button class="x" aria-label="Fermer">✕</button></div>
+  openSheet(`<div class="sh-h"><div class="tr-h"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tl(tr.typ||'TER'))}</span><h2>${tr.num?esc(tr.num)+' → ':'→ '}${esc(tr.dest)}</h2></div><button class="x" aria-label="Fermer">✕</button></div>
   ${inc?`<p><span class="bd-tag s-${esc(inc.sev||'lo')}">${esc(inc.effect||'Perturbé')}</span> ${esc(inc.header||'')}</p>`:''}
   <ol class="tr-st">${rows.map((r,k)=>`<li data-st="${r.sid}" class="${k<cur?'past':k===cur?'now':''}"><b>${hh(Math.floor(r.arr))}</b><span>${esc(N[r.sid].name)}${r.dep-r.arr>=1?` <small style="color:var(--muted)">(départ ${hh(Math.floor(r.dep))})</small>`:''}</span></li>`).join('')}</ol>
-  <div class="cmp-row"><button class="cmp-b" data-ci="${i}">${CMP.includes(trKey(tr))?'✓ Dans la comparaison':'＋ Comparer ce train'}</button>${CMP.length?`<button class="cmp-b alt" data-copen="1">Voir la comparaison (${CMP.length})</button>`:''}</div>
+  <div class="cmp-row" ${i<0?'hidden':''}><button class="cmp-b" data-ci="${i}">${CMP.includes(trKey(tr))?'✓ Dans la comparaison':'＋ Comparer ce train'}</button>${CMP.length?`<button class="cmp-b alt" data-copen="1">Voir la comparaison (${CMP.length})</button>`:''}</div>
   <p class="bd-note">Position calculée d'après les horaires théoriques${Hdemo?' (démonstration)':''}, pas un suivi GPS.</p>`);
   sheet.dataset.m='trn';busUi();
 }
@@ -1089,7 +1151,7 @@ function trainInfo(i){
 function setHtml(){
   const sw=(k,t,d)=>`<label class="sw"><span><b>${t}</b>${d?`<small>${d}</small>`:''}</span><input type="checkbox" data-s="${k}"${SET[k]?' checked':''}><i></i></label>`;
   return `<div class="sh-h"><div class="set-h"><b>Réglages</b><small>Affichage de la carte</small></div><button class="x" aria-label="Fermer">✕</button></div>
-  <div class="set"><h3>Trains en direct</h3>
+  <div class="set"><h3>Application</h3>${instHtml()}<h3>Trains en direct</h3>
   ${sw('live','Placement des trains en direct','Les trains se déplacent sur la carte selon les horaires.')}
   <div class="opts${SET.live?'':' off'}" id="setopts">
   ${sw('dest','Afficher la destination','Ex. « → Nice-Ville » à côté du train (zoomer pour voir les noms).')}
@@ -1140,12 +1202,12 @@ function cmpResults(){
   TRN.list.forEach((tr,i)=>{if(out.length>=8)return;
     if((tr.num&&tr.num.includes(s))||fold(tr.dest).includes(s)||fold(N[tr.pts[0].sid].name).includes(s))out.push([tr,i])});
   out.sort((a,b)=>a[0].t0-b[0].t0);
-  box.innerHTML=out.length?out.map(([tr,i])=>`<button data-ci="${i}"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tr.typ||'TER')}</span><b>${esc(tr.num||'—')}</b><span>→ ${esc(tr.dest)}</span><small>${hh(Math.floor(tr.t0))} ${esc(shortN(N[tr.pts[0].sid].name))}</small></button>`).join(''):'<p class="bd-note">Aucun train trouvé aujourd\'hui.</p>';
+  box.innerHTML=out.length?out.map(([tr,i])=>`<button data-ci="${i}"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tl(tr.typ||'TER'))}</span><b>${esc(tr.num||'—')}</b><span>→ ${esc(tr.dest)}</span><small>${hh(Math.floor(tr.t0))} ${esc(shortN(N[tr.pts[0].sid].name))}</small></button>`).join(''):'<p class="bd-note">Aucun train trouvé aujourd\'hui.</p>';
 }
 function cmpRender(){
   const sel=document.getElementById('cmpsel'),tab=document.getElementById('cmptab');if(!sel||!tab)return;
   const trs=CMP.map(trFind).filter(Boolean);
-  sel.innerHTML=trs.map((tr,i)=>`<span class="cmp-chip"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tr.typ||'TER')}</span>${esc(tr.num||'—')} → ${esc(shortN(tr.dest))}<button data-cdel="${i}" aria-label="Retirer">✕</button></span>`).join('');
+  sel.innerHTML=trs.map((tr,i)=>`<span class="cmp-chip"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tl(tr.typ||'TER'))}</span>${esc(tr.num||'—')} → ${esc(shortN(tr.dest))}<button data-cdel="${i}" aria-label="Retirer">✕</button></span>`).join('');
   if(!trs.length){tab.innerHTML='<p class="bd-note">Ajoute au moins deux trains pour les comparer.</p>';return}
   const rs=trs.map(trRows),inc=trs.map(t=>INC&&INC.by&&t.num&&INC.by[t.num]);
   const order=[],seen=new Set();
@@ -1153,7 +1215,7 @@ function cmpRender(){
   const first=sid=>Math.min(...rs.map(r=>{const x=r.find(y=>y.sid===sid);return x?x.arr:1e9}));
   order.sort((a,b)=>first(a)-first(b));
   const cell=(r,sid)=>{const x=r.find(y=>y.sid===sid);return x?`${hh(Math.floor(x.arr))}${x.dep-x.arr>=1?`<br><small style="color:var(--muted)">dép. ${hh(Math.floor(x.dep))}</small>`:''}`:'<span style="color:var(--muted)">—</span>'};
-  const th=trs.map(t=>`<th>${esc(t.typ||'TER')} ${esc(t.num||'')}<br>→ ${esc(shortN(t.dest))}</th>`).join('');
+  const th=trs.map(t=>`<th>${esc(tl(t.typ||'TER'))} ${esc(t.num||'')}<br>→ ${esc(shortN(t.dest))}</th>`).join('');
   const sum=(lbl,f)=>`<tr class="sum"><td>${lbl}</td>${trs.map((t,i)=>`<td>${f(t,i)}</td>`).join('')}${trs.length===2?'<td></td>':''}</tr>`;
   const body=order.map(sid=>{
     let d='';
@@ -1185,6 +1247,133 @@ sheet.addEventListener('click',e=>{
     if(sheet.dataset.m==='cmp'){cmpRender();return}
     sheet.dataset.m='';openPanel('cmp',cmpHtml());cmpRender();
   }
+});
+
+/* ===================== RECHERCHE DE TRAJET ===================== */
+var TP={from:null,to:null,day:0,time:'',mode:'dep',corr:true,res:[]},TPC={};
+const nowHM=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+const stList=()=>Object.values(N).filter(n=>n.t==1).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+function stFind(v){
+  const s=fold(String(v).trim());if(!s)return null;
+  const L=stList(),ex=L.find(n=>fold(n.name)===s);if(ex)return ex.id;
+  const part=L.filter(n=>fold(n.name).includes(s)).sort((a,b)=>a.name.length-b.name.length);
+  return part.length?part[0].id:null;
+}
+function tripsForDay(add){
+  if(!ensureTrains())return[];
+  if(add===0)return TRN.list;
+  const k=(Hdemo?'d':'r')+add+isoToday();
+  return TPC[k]||(TPC[k]=makeTrips(add));
+}
+const rowsOf=tr=>tr._r||(tr._r=trRows(tr));
+function tpHtml(){
+  const head=`<div class="sh-h"><div class="tp-h"><b>Rechercher un trajet</b><small>Gare de départ, gare d'arrivée et heure</small></div><button class="x" aria-label="Fermer">✕</button></div>`;
+  if(!ensureTrains())return head+'<p class="bd-note">Chargement des horaires…</p>';
+  if(!TP.time)TP.time=nowHM();
+  const nd=Hdemo?14:H.days,st=Hdemo?isoToday():H.start,days=[];
+  for(let k=0;k<7;k++){const ix=dayIdx(k,st);if(ix<0||ix>=nd)continue;const dt=new Date(Date.now()+k*864e5);
+    days.push(`<option value="${k}"${TP.day===k?' selected':''}>${k===0?"Aujourd'hui":k===1?'Demain':dt.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'})}</option>`)}
+  return head+`<div class="tp-f">
+  <div class="tp-st"><input id="tpfrom" list="stlist" placeholder="Gare de départ" autocomplete="off" value="${esc(TP.from?N[TP.from].name:'')}"><input id="tpto" list="stlist" placeholder="Gare d'arrivée" autocomplete="off" value="${esc(TP.to?N[TP.to].name:'')}"><button id="tpswap" class="tp-sw" aria-label="Inverser départ et arrivée">⇅</button></div>
+  <div class="tp-row"><select id="tpday" aria-label="Jour">${days.join('')}</select><input id="tptime" type="time" value="${TP.time}" aria-label="Heure"></div>
+  <div class="spd"><button data-tm="dep" class="${TP.mode==='dep'?'on':''}">Partir après</button><button data-tm="arr" class="${TP.mode==='arr'?'on':''}">Arriver avant</button></div>
+  <label class="sw"><span><b>Autoriser une correspondance</b><small>Un changement au maximum, 4 min minimum.</small></span><input type="checkbox" id="tpcorr"${TP.corr?' checked':''}><i></i></label>
+  </div><div id="tpres"></div>`;
+}
+function tpSearch(){
+  const box=document.getElementById('tpres');if(!box)return;
+  const A=TP.from,B=TP.to;
+  if(!A||!B){box.innerHTML='<p class="bd-note">Choisis une gare de départ et une gare d\'arrivée (tape quelques lettres).</p>';return}
+  if(A===B){box.innerHTML='<p class="bd-note warn">Le départ et l\'arrivée sont identiques.</p>';return}
+  const trips=tripsForDay(TP.day);
+  if(!trips.length){box.innerHTML='<p class="bd-note warn">Aucun horaire disponible pour ce jour.</p>';return}
+  const hm=(TP.time||nowHM()).split(':').map(Number),t0=hm[0]*60+hm[1];
+  const incOf=tr=>INC&&INC.by&&tr.num&&INC.by[tr.num];
+  const canc=tr=>{const i=incOf(tr);return !!i&&i.effect==='Supprimé'};
+  const opts=[];let dropped=0;
+  trips.forEach(tr=>{const R=rowsOf(tr),ia=R.findIndex(r=>r.sid===A);if(ia<0)return;
+    const ib=R.findIndex((r,k)=>k>ia&&r.sid===B);if(ib<0)return;
+    if(canc(tr)){dropped++;return}
+    opts.push({dep:R[ia].dep,arr:R[ib].arr,legs:[{tr,from:A,to:B,dep:R[ia].dep,arr:R[ib].arr}]})});
+  if(TP.corr){
+    const fromA=[],byX=new Map();
+    trips.forEach(tr=>{if(canc(tr))return;const R=rowsOf(tr);
+      const ia=R.findIndex(r=>r.sid===A);
+      if(ia>=0)for(let k=ia+1;k<R.length;k++)if(R[k].sid!==B)fromA.push({tr,x:R[k].sid,arr:R[k].arr,dep:R[ia].dep});
+      const ib=R.findIndex(r=>r.sid===B);
+      if(ib>0)for(let k=0;k<ib;k++){if(R[k].sid===A)continue;const a=byX.get(R[k].sid)||[];a.push({tr,dep:R[k].dep,arr:R[ib].arr});byX.set(R[k].sid,a)}});
+    const best=new Map();
+    fromA.forEach(f=>{
+      if(TP.mode==='dep'&&f.dep<t0)return;
+      (byX.get(f.x)||[]).forEach(c=>{
+        if(c.tr===f.tr||c.dep<f.arr+4||c.dep-f.arr>120)return;
+        const key=trKey(f.tr),cur=best.get(key);
+        if(!cur||c.arr<cur.arr)best.set(key,{dep:f.dep,arr:c.arr,legs:[{tr:f.tr,from:A,to:f.x,dep:f.dep,arr:f.arr},{tr:c.tr,from:f.x,to:B,dep:c.dep,arr:c.arr}]});
+      })});
+    best.forEach(o=>opts.push(o));
+  }
+  let list=opts.filter(o=>TP.mode==='dep'?o.dep>=t0:o.arr<=t0);
+  list=list.filter((o,i)=>!list.some((p,j)=>j!==i&&p.dep>=o.dep&&p.arr<=o.arr&&(p.dep>o.dep||p.arr<o.arr||p.legs.length<o.legs.length||(p.legs.length===o.legs.length&&j<i))));
+  if(TP.mode==='dep')list=list.sort((a,b)=>a.dep-b.dep||a.arr-b.arr).slice(0,10);
+  else list=list.sort((a,b)=>b.arr-a.arr).slice(0,10).sort((a,b)=>a.dep-b.dep);
+  TP.res=list;
+  const tag=tr=>{const i=incOf(tr);return i?`<span class="bd-tag s-${esc(i.sev||'lo')}">${esc(i.effect||'Perturbé')}</span>`:''};
+  box.innerHTML=(list.length?list.map((o,i)=>{
+    const legs=o.legs.map((l,k)=>{const tr=l.tr;
+      return (k?`<div class="tp-x">Correspondance à <b>${esc(N[l.from].name)}</b> · ${hh(Math.floor(o.legs[k-1].arr))} → ${hh(Math.floor(l.dep))} (${Math.round(l.dep-o.legs[k-1].arr)} min)</div>`:'')+
+      `<button class="tp-leg" data-r="${i}" data-l="${k}"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tl(tr.typ||'TER'))}</span><span class="tp-n">${esc(tr.num||'')}</span><span class="tp-s">${esc(N[l.from].name)} → ${esc(N[l.to].name)}<small>${hh(Math.floor(l.dep))} → ${hh(Math.floor(l.arr))} · vers ${esc(shortN(tr.dest))}</small></span>${tag(tr)}</button>`}).join('');
+    return `<div class="tp-r"><div class="tp-t"><b>${hh(Math.floor(o.dep))}</b><span>→</span><b>${hh(Math.floor(o.arr))}</b><em>${dur(o.arr-o.dep)}</em><span class="tp-c${o.legs.length>1?' x':''}">${o.legs.length>1?'1 correspondance':'Direct'}</span></div>${legs}</div>`}).join('')
+    :`<p class="bd-note warn">Aucun train trouvé ${TP.mode==='dep'?'après':'avant'} ${esc(TP.time||nowHM())} ce jour-là${TP.corr?'':'. Essaie en autorisant une correspondance'}.</p>`)
+    +(dropped?`<p class="bd-note">${dropped} train${dropped>1?'s':''} supprimé${dropped>1?'s':''} masqué${dropped>1?'s':''}.</p>`:'')
+    +`<p class="bd-note">Horaires théoriques sur le périmètre du plan${Hdemo?' (démonstration)':''}. Touche un train pour voir ses arrêts.</p>`;
+}
+function tpOpen(){openPanel('tp',tpHtml());tpSearch()}
+document.getElementById('tpbtn').addEventListener('click',()=>{const opening=!(sheet.style.display==='block'&&sheet.dataset.m==='tp');openPanel('tp',tpHtml());if(opening)tpSearch()});
+document.body.insertAdjacentHTML('beforeend','<datalist id="stlist">'+stList().map(n=>`<option value="${esc(n.name)}">`).join('')+'</datalist>');
+sheet.addEventListener('change',e=>{
+  const t=e.target;if(!t.id||t.id.indexOf('tp')!==0)return;
+  if(t.id==='tpfrom'){TP.from=stFind(t.value);if(TP.from)t.value=N[TP.from].name}
+  else if(t.id==='tpto'){TP.to=stFind(t.value);if(TP.to)t.value=N[TP.to].name}
+  else if(t.id==='tpday')TP.day=+t.value;
+  else if(t.id==='tptime')TP.time=t.value;
+  else if(t.id==='tpcorr')TP.corr=t.checked;
+  tpSearch();
+});
+sheet.addEventListener('click',e=>{
+  if(e.target.closest('#tpswap')){
+    const a=TP.from;TP.from=TP.to;TP.to=a;
+    document.getElementById('tpfrom').value=TP.from?N[TP.from].name:'';document.getElementById('tpto').value=TP.to?N[TP.to].name:'';
+    tpSearch();return;
+  }
+  const tm=e.target.closest('[data-tm]');
+  if(tm){TP.mode=tm.dataset.tm;sheet.querySelectorAll('[data-tm]').forEach(b=>b.classList.toggle('on',b===tm));tpSearch();return}
+  const lg=e.target.closest('.tp-leg');
+  if(lg){const o=TP.res[+lg.dataset.r];if(o)trainInfoTr(o.legs[+lg.dataset.l].tr);return}
+  const go=e.target.closest('[data-tp]');
+  if(go&&bdSt){TP[go.dataset.tp]=bdSt;sheet.dataset.m='';openPanel('tp',tpHtml());tpSearch()}
+});
+
+/* ===================== INSTALLATION (PWA) ===================== */
+var DIP=null;
+const isStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+function instHtml(){
+  if(isStandalone())return '<p class="set-st">✓ Application installée.</p>';
+  if(DIP)return '<button class="cmp-b wide" data-inst="1">Installer l\'application</button><p class="bd-note">Ouverture plein écran, icône sur l\'écran d\'accueil, fonctionne aussi hors connexion avec les derniers horaires.</p>';
+  if(isIOS())return '<p class="bd-note">Sur iPhone / iPad : touche <b>Partager</b> dans Safari, puis <b>Sur l\'écran d\'accueil</b>.</p>';
+  return '<p class="bd-note">Dans le menu <b>⋮</b> de ton navigateur, choisis <b>Installer l\'application</b> (ou <b>Ajouter à l\'écran d\'accueil</b>). Le bouton apparaît ici dès que le navigateur le propose.</p>';
+}
+function instShow(){
+  let off=false;try{off=localStorage.getItem('ter-inst-off')==='1'}catch(e){}
+  const b=document.getElementById('instbar');if(b)b.style.display=(DIP&&!off&&!isStandalone())?'flex':'none';
+}
+stage.insertAdjacentHTML('beforeend','<div class="ui" id="instbar"><span>Installer l\'application</span><button data-inst="1">Installer</button><button class="x2" id="instx" aria-label="Fermer">✕</button></div>');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;setTimeout(instShow,2500);if(sheet.dataset.m==='set')sheet.innerHTML='<div class="grab"></div>'+setHtml()});
+window.addEventListener('appinstalled',()=>{DIP=null;instShow()});
+document.addEventListener('click',e=>{
+  if(e.target.closest('#instx')){try{localStorage.setItem('ter-inst-off','1')}catch(x){}instShow();return}
+  if(e.target.closest('[data-inst]')&&DIP){const p=DIP;DIP=null;p.prompt();p.userChoice.finally(()=>instShow())}
 });
 
 window.addEventListener('resize',()=>{liftZoom();if(!ptrs.size){const k=TT.k/fitK;fit();if(k>1.02){TT.k=fitK*k;apply()}}});
