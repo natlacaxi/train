@@ -31,8 +31,8 @@ button{font-family:inherit;color:inherit}
 #app{position:fixed;inset:0}
 #stage{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
   background:radial-gradient(1200px 700px at 30% 20%,color-mix(in srgb,var(--bg) 85%,#fff),var(--bg))}
-svg{width:100%;height:100%;display:block;cursor:grab}
-svg:active{cursor:grabbing}
+#map{width:100%;height:100%;display:block;cursor:grab}
+#map:active{cursor:grabbing}
 
 /* en-tête flottant */
 header{position:absolute;z-index:6;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));
@@ -354,13 +354,41 @@ table.cmp tr.sum td{background:var(--chip);font-weight:700}
 #instbar{left:12px;bottom:44px;z-index:4;display:none;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:8px 8px 8px 14px;box-shadow:var(--shadow);font-size:13.5px;font-weight:700;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #instbar button{height:36px;border-radius:10px;border:0;font-weight:750;cursor:pointer;padding:0 14px;background:#1b7be6;color:#fff}
 #instbar button.x2{background:none;color:var(--muted);padding:0 8px;font-size:16px}
+
+/* ===== vue carte réelle (Leaflet) ===== */
+#geo{position:absolute;inset:0;display:none;z-index:1;background:#dfe6ee}
+#geo .leaflet-control-attribution{font-size:10px}
+.leaflet-tooltip.gl{background:rgba(255,255,255,.88);border:0;box-shadow:none;color:#12306b;font:700 11px/1.1 system-ui,sans-serif;padding:1px 4px;display:none}
+.leaflet-tooltip.gl::before{display:none}
+#geo.z9 .leaflet-tooltip.gl.gm{display:block}
+#geo.z11 .leaflet-tooltip.gl{display:block}
+.leaflet-tooltip.gl.gm{font-size:12.5px;font-weight:800}
+#geo.sat .leaflet-tooltip.gl{background:rgba(10,20,40,.72);color:#fff}
+.gt{position:relative;width:16px;height:16px}
+.gt i{position:absolute;inset:0;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.55)}
+.gt b{position:absolute;left:20px;top:-1px;white-space:nowrap;font:700 11.5px/1.2 system-ui,sans-serif;color:#10213f;background:rgba(255,255,255,.9);padding:1px 5px;border-radius:5px;display:none}
+#geo.z9 .gt b{display:block}
+.gt.canc i{border-style:dashed;opacity:.6}
+.gt.hot i{box-shadow:0 0 0 4px rgba(225,29,72,.45),0 1px 4px rgba(0,0,0,.55)}
+.gt.warn i{box-shadow:0 0 0 4px rgba(245,158,11,.5),0 1px 4px rgba(0,0,0,.55)}
+#zv{font-size:15px}
+.vw{display:flex;gap:8px;margin:10px 0 4px}.vw button{flex:1;height:40px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);font-weight:750;font-size:13px;cursor:pointer;color:var(--ink)}
+.vw button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.gk{width:100%;height:44px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);color:var(--ink);font:inherit;padding:0 12px;margin:8px 0 2px}
+.tp-src{display:flex;gap:8px;margin:10px 0 2px}.tp-src button{flex:1;height:40px;border-radius:12px;border:1.5px solid var(--bd);background:var(--chip);font-weight:750;font-size:13px;cursor:pointer;color:var(--ink)}
+.tp-src button.on{background:#0f766e;border-color:#0f766e;color:#fff}
+.gm-r{border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin:10px 0;background:var(--chip)}
+.gm-st{display:flex;gap:8px;align-items:flex-start;margin-top:7px;font-size:13.5px}
+.gm-st .tr-pill{flex:none;margin-top:1px}.gm-st small{display:block;color:var(--muted);font-size:12px}
+.gm-link{display:inline-block;margin:6px 0 2px;font-weight:700;font-size:13.5px;color:#1b7be6}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="stage">
     <svg id="map" role="img" aria-label="Plan schématique du réseau TER PACA"><g id="vp"></g></svg>
-    <div class="ui" id="zoom"><button id="zi" aria-label="Zoom avant">+</button><button id="zo" aria-label="Zoom arrière">−</button><button id="zr" aria-label="Recentrer la carte">⌂</button></div>
+    <div id="geo"></div>
+    <div class="ui" id="zoom"><button id="zv" aria-label="Changer de vue (schéma / satellite)">🛰</button><button id="zi" aria-label="Zoom avant">+</button><button id="zo" aria-label="Zoom arrière">−</button><button id="zr" aria-label="Recentrer la carte">⌂</button></div>
     <div class="ui" id="note">Plan schématique, desserte indicative</div>
     <div class="ui" id="sheet"></div>
   </div>
@@ -414,7 +442,9 @@ S('cav','Cavaillon',566,465,'t',{major:1});
 row([['isl','Isle-sur-la-Sorgue - Fontaine-de-Vaucluse'],['tho','Le Thor'],['gad','Gadagne'],['sts','Saint-Saturnin-lès-Avignon'],['mor','Morières-lès-Avignon'],['mtf','Montfavet']],595,465,717,465,'dn');
 W('w_c2',740,465);
 S('tar','Tarascon',687,361,'r');
-T('nim','Nîmes / Montpellier',687,305,0,-1);
+S('nim','Nîmes',687,300,'r',{major:1});
+S('lun','Lunel',687,262,'r');
+S('mpl','Montpellier-Saint-Roch',687,225,'r',{major:1});
 
 /* Avignon, Orange, Carpentras */
 S('avi','Avignon-Centre',845,428,'b',{major:1});
@@ -424,7 +454,14 @@ W('w_j1',966,428);W('w_j2',966,368);
 row([['bed','Bédarrides'],['cou2','Courthézon']],1009,368,1045,368,'u');
 S('ora','Orange',1125,368,'b',{major:1});
 S('bol','Bollène-la-Croisière',1179,368,'u');
-T('ly','Lyon / Valence',1230,368,1,0);
+S('pie','Pierrelatte',1236,368,'u');
+S('mtl','Montélimar',1293,368,'u');
+S('liv','Livron',1350,368,'u');
+S('val','Valence-Ville',1410,368,'b',{major:1});
+S('tai',"Tain-l'Hermitage - Tournon",1470,368,'u');
+S('vie','Vienne',1530,368,'u');
+S('lyp','Lyon-Part-Dieu',1590,368,'b',{major:1});
+S('lyo','Lyon-Perrache',1650,368,'t',{major:1});
 row([['ent','Entraigues-sur-la-Sorgue'],['mont','Monteux']],1000,428,1038,428,'dn');
 S('cpt','Carpentras',1076,428,'b',{major:1});
 
@@ -440,7 +477,13 @@ S('gap','Gap',833,817,'t',{major:1});
 row([['cho','Chorges'],['emb','Embrun'],['mdg','Mont-Dauphin - Guillestre'],['arg',"L'Argentière-les-Écrins"]],863,817,936,817,'u');
 S('brc','Briançon',966,817,'b',{major:1});
 S('asp','Aspes-sur-Buëch',771,772,'l');
-T('ter','Valence / Grenoble',771,665,0,-1);
+S('cle','Clelles-Mens',771,722,'r');
+S('vif','Vif',771,672,'r');
+S('gre','Grenoble',771,622,'r',{major:1});
+W('w_d4',721,742);W('w_d3',700,700);
+S('die','Die',700,650,'l');
+S('cre','Crest',700,600,'l');
+W('w_d2',700,500);W('w_d1',1350,500);
 
 /* Marseille – Toulon – Les Arcs */
 row([['bla','Marseille-Blancarde'],['pom','La Pomme'],['smar','Saint-Marcel'],['bar','La Barasse'],['pen','La Penne-sur-Huveaune'],['aub','Aubagne'],['cas','Cassis'],['cio','La Ciotat'],['cey','Ceyreste'],['sca','Saint-Cyr - Les Lecques - La Cadière'],['ban','Bandol'],['oll','Ollioules - Sanary - Six-Fours'],['sey','La Seyne - Six-Fours']],511,1024,782,1024,'u');
@@ -496,12 +539,12 @@ const LINES=[
  {id:'07B',n:'Marseille - Miramas via Côte Bleue',c:'#BA68C8',r:BLEUE},
  {id:'08',n:'Marseille - Avignon via Arles',c:'#E8559D',r:ROG+' '+TOP,skip:SKR},
  {id:'09',n:'Marseille - Avignon via Cavaillon',c:'#8D5524',r:ROG+' '+BOT,skip:SKR},
- {id:'10',n:'Marseille - Avignon - Valence - Lyon',c:'#0A2A6B',r:ROG+' '+BOT+' sor w_j1 w_j2 bed cou2 ora bol ly',skip:SKR+' vit lam sen org tho gad sts mor mtf'},
- {id:'11',n:'Marseille - Nîmes - Montpellier',c:'#00B8F0',r:ROG+' w_t1 w_t2 smc arl w_t3 tar nim',skip:SKR+' smc'},
+ {id:'10',n:'Marseille - Avignon - Valence - Lyon',c:'#0A2A6B',r:ROG+' '+BOT+' sor w_j1 w_j2 bed cou2 ora bol pie mtl liv val tai vie lyp lyo',skip:SKR+' vit lam sen org tho gad sts mor mtf'},
+ {id:'11',n:'Marseille - Nîmes - Montpellier',c:'#00B8F0',r:ROG+' w_t1 w_t2 smc arl w_t3 tar nim lun mpl',skip:SKR+' smc'},
  {id:'12',n:'Marseille - Aix-en-Provence - Pertuis',c:'#A5C93A',r:'mar '+AIX+' mey w_pe per'},
  {id:'13',n:'Marseille - Aix-en-Provence - Gap - Briançon',c:'#455A64',r:'mar '+AIX+' '+ALP},
- {id:'14',n:'Romans - Valence - Gap - Briançon',c:'#2E7D32',r:'ter asp vey gap cho emb mdg arg brc'},
- {id:'15',n:'Gap - Grenoble',c:'#90A4AE',r:'ter asp vey gap'},
+ {id:'14',n:'Valence - Die - Gap - Briançon',c:'#2E7D32',r:'val liv w_d1 w_d2 cre die w_d3 w_d4 asp vey gap cho emb mdg arg brc'},
+ {id:'15',n:'Grenoble - Veynes - Gap',c:'#90A4AE',r:'gre vif cle asp vey gap',skip:'asp'},
  {id:'16',n:'Carpentras - Avignon - Avignon TGV',c:'#00695C',r:'cpt mont ent w_j1 sor avi tgv',skip:'sor'}
 ];
 const LINE={},S2L={};
@@ -612,7 +655,7 @@ function layoutLabels(){
       const {n,fs,variants,cands}=I;
       const score=(m,L)=>{const P=place(n,m),B=boxes(P.x,P.y,P.a,P.r,L,fs);let s=0;
         for(const q of placed)s+=hit(B,q)*100;
-        s+=obstScore(B,n.id)*100+lineScore(B,n.id)*6+(P.r?1:0)+B.pts.filter(p=>p[0]<24||p[0]>1990||p[1]<238||p[1]>1146).length*100;return{m,P,B,s}};
+        s+=obstScore(B,n.id)*100+lineScore(B,n.id)*6+(P.r?1:0)+B.pts.filter(p=>p[0]<24||p[0]>1990||p[1]<192||p[1]>1146).length*100;return{m,P,B,s}};
       let best=null,bv=0;
       variants.forEach((v,vi)=>{
         if(best&&best.s<100)return;
@@ -647,7 +690,7 @@ layoutLabels();
 /* ---- pan / zoom ---- */
 let T0={k:1,x:0,y:0},fitK=.5;
 const TT=T0;
-const BND={x0:30,y0:228,x1:1960,y1:1150};
+const BND={x0:30,y0:190,x1:1960,y1:1150};
 function apply(){
   vp.setAttribute('transform',`translate(${TT.x.toFixed(1)} ${TT.y.toFixed(1)}) scale(${TT.k.toFixed(4)})`);
   svg.classList.toggle('zm',TT.k>=.8);
@@ -704,14 +747,15 @@ const up=e=>{
 stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
 stage.addEventListener('wheel',e=>{if(e.target.closest('.ui'))return;e.preventDefault();const p=rel(e);zoomAt(p.x,p.y,Math.exp(-e.deltaY*.0015))},{passive:false});
 const cen=()=>{const r=stage.getBoundingClientRect();return{x:r.width/2,y:r.height/2}};
-$('#zi').onclick=()=>{const c=cen();zoomAt(c.x,c.y,1.5)};
-$('#zo').onclick=()=>{const c=cen();zoomAt(c.x,c.y,1/1.5)};
-$('#zr').onclick=()=>{const s={...TT};fit();const t={...TT};Object.assign(TT,s);tween(t.k,t.x,t.y);sel=null;closeSheet();paint()};
+$('#zi').onclick=()=>{if(GEO.on){GEO.map.zoomIn();return}const c=cen();zoomAt(c.x,c.y,1.5)};
+$('#zo').onclick=()=>{if(GEO.on){GEO.map.zoomOut();return}const c=cen();zoomAt(c.x,c.y,1/1.5)};
+$('#zr').onclick=()=>{if(GEO.on){geoFit();return}const s={...TT};fit();const t={...TT};Object.assign(TT,s);tween(t.k,t.x,t.y);sel=null;closeSheet();paint()};
 
 /* ---- sélection ---- */
 let sel=null,curSt=null;
 function paint(){
   svg.classList.toggle('sel',!!sel);
+  if(typeof geoStyle==='function')geoStyle();
   const set=sel?new Set(LINE[sel].stops):null;
   vp.querySelectorAll('.casing').forEach(el=>el.classList.toggle('act',!!sel&&E.get(el.dataset.e).ls.includes(sel)));
   vp.querySelectorAll('.stripe').forEach(el=>el.classList.toggle('act',el.dataset.l===sel));
@@ -785,6 +829,7 @@ function focusStation(id){
   const n=N[id];curSt=id;
   if(n.t==1)showStation(id);
   paint();
+  if(GEO.on){const c=geoXY(id);if(c)GEO.map.flyTo(c,Math.max(GEO.map.getZoom(),11),{duration:.6});return}
   const r=stage.getBoundingClientRect(),k=Math.max(TT.k,1.25);
   tween(k,r.width/2-n.x*k,r.height*.34-n.y*k);
 }
@@ -928,7 +973,7 @@ sheet.addEventListener('click',e=>{
 fetch('horaires-paca.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()})
   .then(j=>{if(j&&j.v===2&&j.stations)H=j;else{Hdemo=true;Hnote='old'}})
   .catch(()=>{Hdemo=true;Hnote='none'})
-  .finally(()=>{Hready=true;boardRender()});
+  .finally(()=>{Hready=true;boardRender();if(typeof geoReload==='function')geoReload()});
 
 /* ===================== MENU BUS ALPES-MARITIMES (liste) ===================== */
 const ZOU_EX=[{n:'51',d:'Nice - Digne-les-Bains'},{n:'60',d:'Nice - Aix-en-Provence'},{n:'80',d:'Nice Aéroport - Monaco - Menton'},{n:'81',d:'Nice Aéroport - Cannes'},{n:'82',d:'Nice Aéroport - Vallauris'},{n:'83',d:'Valberg - Beuil - Nice'},{n:'90',d:'Saint-Raphaël - Fréjus - Mandelieu - Nice'}];
@@ -991,7 +1036,7 @@ function incLoad(){
 incLoad();setInterval(incLoad,300000);
 
 /* ===================== TRAINS EN DIRECT (placement d'après les horaires) ===================== */
-var SET={live:false,dest:true,num:true,type:true,perturb:true,cancelled:false,speed:1,kTER:true,kTGV:true,kIC:true};
+var SET={view:'schema',live:false,dest:true,num:true,type:true,perturb:true,cancelled:false,speed:1,kTER:true,kTGV:true,kIC:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('ter-set')||'{}'))}catch(e){}
 const saveSet=()=>{try{localStorage.setItem('ter-set',JSON.stringify(SET))}catch(e){}};
 var clk={base:0,t0:0};
@@ -1010,7 +1055,7 @@ function pathBetween(a,b){
   if(!best)best={ids:[a,b],lid:null};
   const pts=best.ids.map(id=>[N[id].x,N[id].y]),cum=[0];
   for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
-  return PCACHE[k]={pts,cum,total:cum[cum.length-1]||1,lid:best.lid};
+  return PCACHE[k]={ids:best.ids,pts,cum,total:cum[cum.length-1]||1,lid:best.lid};
 }
 function pointAt(p,d){
   let i=1;while(i<p.cum.length-1&&p.cum[i]<d)i++;
@@ -1080,7 +1125,7 @@ function ensureTrains(){
 }
 function trnTick(){
   const pill=document.getElementById('livepill');
-  if(!SET.live||!Hready){if(TRN.els.size)trnClear();if(pill)pill.style.display='none';return}
+  if(!SET.live||!Hready){if(TRN.els.size)trnClear();if(GEO.trs.size)geoClearTrains();if(pill)pill.style.display='none';return}
   ensureTrains();
   if(!TRN.g){TRN.g=document.createElementNS(NS,'g');TRN.g.id='trains';vp.appendChild(TRN.g)}
   const m=simMin(),seen=new Set(),cells=new Set(),showLab=TT.k>=.85;
@@ -1093,6 +1138,8 @@ function trnTick(){
     todo.push({tr,i,inc,canc,pr:(inc&&SET.perturb)?0:1});
   });
   todo.sort((a,b)=>a.pr-b.pr);
+  if(GEO.on){if(TRN.els.size)trnClear();finishTick(geoTrains(todo,m),m);return}
+  if(GEO.trs.size)geoClearTrains();
   todo.forEach(({tr,i,inc,canc})=>{
     const pos=trnPos(tr,m);if(!pos)return;
     n++;seen.add(i);
@@ -1119,6 +1166,10 @@ function trnTick(){
     if(lab!==o.lab){o.tx.textContent=lab;o.lab=lab}
   });
   TRN.els.forEach((o,i)=>{if(!seen.has(i)){o.g.remove();TRN.els.delete(i)}});
+  finishTick(n,m);
+}
+function finishTick(n,m){
+  const pill=document.getElementById('livepill');
   if(pill){
     pill.style.display='flex';
     const sim=SET.speed>1?` · ${hh(Math.floor(m))}`:'';
@@ -1151,7 +1202,10 @@ function trainInfoTr(tr){
 function setHtml(){
   const sw=(k,t,d)=>`<label class="sw"><span><b>${t}</b>${d?`<small>${d}</small>`:''}</span><input type="checkbox" data-s="${k}"${SET[k]?' checked':''}><i></i></label>`;
   return `<div class="sh-h"><div class="set-h"><b>Réglages</b><small>Affichage de la carte</small></div><button class="x" aria-label="Fermer">✕</button></div>
-  <div class="set"><h3>Application</h3>${instHtml()}<h3>Trains en direct</h3>
+  <div class="set"><h3>Affichage de la carte</h3>
+  <div class="vw">${[{k:'schema',t:'Schéma'},{k:'osm',t:'Plan OSM'},{k:'sat',t:'Satellite'}].map(v=>`<button data-vw="${v.k}" class="${SET.view===v.k?'on':''}">${v.t}</button>`).join('')}</div>
+  <p class="bd-note">Plan OSM et Satellite tracent les lignes et les gares sur une vraie carte (Leaflet + OpenStreetMap). Connexion nécessaire.</p>
+  <h3>Application</h3>${instHtml()}<h3>Trains en direct</h3>
   ${sw('live','Placement des trains en direct','Les trains se déplacent sur la carte selon les horaires.')}
   <div class="opts${SET.live?'':' off'}" id="setopts">
   ${sw('dest','Afficher la destination','Ex. « → Nice-Ville » à côté du train (zoomer pour voir les noms).')}
@@ -1165,6 +1219,9 @@ function setHtml(){
   <div class="spd">${[1,10,60].map(v=>`<button data-sp="${v}" class="${SET.speed===v?'on':''}">${v===1?'Temps réel':'×'+v}</button>`).join('')}</div>
   </div>
   <p class="set-st" id="livestat"></p>
+  <h3>Recherche dans toute la France</h3>
+  <input class="gk" id="gkey" type="password" autocomplete="off" placeholder="Clé API Google Maps (facultatif)" value="${esc(gkey())}">
+  <p class="bd-note">Avec une clé, le bouton « Toute la France » de la recherche de trajet affiche les horaires Google Maps en liste (hors dessin). Active « Routes API » dans Google Cloud et limite la clé à l'adresse de ton site.</p>
   <h3>Comparer des trains</h3>
   <button class="cmp-b wide" data-copen="1">Comparer des trains (numéro, destination)${CMP.length?' · '+CMP.length:''}</button>
   <p class="bd-note">Les positions sont calculées d'après les horaires théoriques SNCF. Les perturbations viennent du fichier des incidents ; les retards exacts ne sont pas encore pris en compte.</p></div>`;
@@ -1250,7 +1307,7 @@ sheet.addEventListener('click',e=>{
 });
 
 /* ===================== RECHERCHE DE TRAJET ===================== */
-var TP={from:null,to:null,day:0,time:'',mode:'dep',corr:true,res:[]},TPC={};
+var TP={src:'plan',gf:'',gt:'',gall:false,from:null,to:null,day:0,time:'',mode:'dep',corr:true,res:[]},TPC={};
 const nowHM=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
 const stList=()=>Object.values(N).filter(n=>n.t==1).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
 function stFind(v){
@@ -1273,15 +1330,16 @@ function tpHtml(){
   const nd=Hdemo?14:H.days,st=Hdemo?isoToday():H.start,days=[];
   for(let k=0;k<7;k++){const ix=dayIdx(k,st);if(ix<0||ix>=nd)continue;const dt=new Date(Date.now()+k*864e5);
     days.push(`<option value="${k}"${TP.day===k?' selected':''}>${k===0?"Aujourd'hui":k===1?'Demain':dt.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'})}</option>`)}
-  return head+`<div class="tp-f">
-  <div class="tp-st"><input id="tpfrom" list="stlist" placeholder="Gare de départ" autocomplete="off" value="${esc(TP.from?N[TP.from].name:'')}"><input id="tpto" list="stlist" placeholder="Gare d'arrivée" autocomplete="off" value="${esc(TP.to?N[TP.to].name:'')}"><button id="tpswap" class="tp-sw" aria-label="Inverser départ et arrivée">⇅</button></div>
+  return head+`<div class="tp-src"><button data-ts="plan" class="${TP.src==='plan'?'on':''}">Gares du plan</button><button data-ts="google" class="${TP.src==='google'?'on':''}">Toute la France</button></div><div class="tp-f">
+  <div class="tp-st"><input id="tpfrom" list="stlist" placeholder="Gare de départ" autocomplete="off" value="${esc(TP.src==='google'?(TP.gf||''):(TP.from?N[TP.from].name:''))}"><input id="tpto" list="stlist" placeholder="Gare d'arrivée" autocomplete="off" value="${esc(TP.src==='google'?(TP.gt||''):(TP.to?N[TP.to].name:''))}"><button id="tpswap" class="tp-sw" aria-label="Inverser départ et arrivée">⇅</button></div>
   <div class="tp-row"><select id="tpday" aria-label="Jour">${days.join('')}</select><input id="tptime" type="time" value="${TP.time}" aria-label="Heure"></div>
   <div class="spd"><button data-tm="dep" class="${TP.mode==='dep'?'on':''}">Partir après</button><button data-tm="arr" class="${TP.mode==='arr'?'on':''}">Arriver avant</button></div>
-  <label class="sw"><span><b>Autoriser une correspondance</b><small>Un changement au maximum, 4 min minimum.</small></span><input type="checkbox" id="tpcorr"${TP.corr?' checked':''}><i></i></label>
+  ${TP.src==='google'?`<label class="sw"><span><b>Inclure bus, tram et métro</b><small>Sinon : trains uniquement (TER, TGV, Intercités).</small></span><input type="checkbox" id="tpgall"${TP.gall?' checked':''}><i></i></label>`:`<label class="sw"><span><b>Autoriser une correspondance</b><small>Un changement au maximum, 4 min minimum.</small></span><input type="checkbox" id="tpcorr"${TP.corr?' checked':''}><i></i></label>`}
   </div><div id="tpres"></div>`;
 }
 function tpSearch(){
   const box=document.getElementById('tpres');if(!box)return;
+  if(TP.src==='google'){gHint();return}
   const A=TP.from,B=TP.to;
   if(!A||!B){box.innerHTML='<p class="bd-note">Choisis une gare de départ et une gare d\'arrivée (tape quelques lettres).</p>';return}
   if(A===B){box.innerHTML='<p class="bd-note warn">Le départ et l\'arrivée sont identiques.</p>';return}
@@ -1332,6 +1390,8 @@ document.getElementById('tpbtn').addEventListener('click',()=>{const opening=!(s
 document.body.insertAdjacentHTML('beforeend','<datalist id="stlist">'+stList().map(n=>`<option value="${esc(n.name)}">`).join('')+'</datalist>');
 sheet.addEventListener('change',e=>{
   const t=e.target;if(!t.id||t.id.indexOf('tp')!==0)return;
+  if(TP.src==='google'&&(t.id==='tpfrom'||t.id==='tpto')){if(t.id==='tpfrom')TP.gf=t.value.trim();else TP.gt=t.value.trim();gHint();return}
+  if(t.id==='tpgall'){TP.gall=t.checked;return}
   if(t.id==='tpfrom'){TP.from=stFind(t.value);if(TP.from)t.value=N[TP.from].name}
   else if(t.id==='tpto'){TP.to=stFind(t.value);if(TP.to)t.value=N[TP.to].name}
   else if(t.id==='tpday')TP.day=+t.value;
@@ -1340,6 +1400,7 @@ sheet.addEventListener('change',e=>{
   tpSearch();
 });
 sheet.addEventListener('click',e=>{
+  if(e.target.closest('#tpswap')&&TP.src==='google'){const a=TP.gf;TP.gf=TP.gt;TP.gt=a;document.getElementById('tpfrom').value=TP.gf;document.getElementById('tpto').value=TP.gt;gHint();return}
   if(e.target.closest('#tpswap')){
     const a=TP.from;TP.from=TP.to;TP.to=a;
     document.getElementById('tpfrom').value=TP.from?N[TP.from].name:'';document.getElementById('tpto').value=TP.to?N[TP.to].name:'';
@@ -1374,6 +1435,207 @@ window.addEventListener('appinstalled',()=>{DIP=null;instShow()});
 document.addEventListener('click',e=>{
   if(e.target.closest('#instx')){try{localStorage.setItem('ter-inst-off','1')}catch(x){}instShow();return}
   if(e.target.closest('[data-inst]')&&DIP){const p=DIP;DIP=null;p.prompt();p.userChoice.finally(()=>instShow())}
+});
+
+/* ===================== CARTE RÉELLE : OpenStreetMap / satellite (Leaflet) ===================== */
+var GEO={on:false,map:null,base:null,over:null,lines:new Map(),stnG:null,lnG:null,trG:null,trs:new Map(),loading:false,fitted:false,drawn:false,lastSel:null,partial:false};
+/* coordonnées de secours (grandes gares) : remplacées par celles de horaires-paca.json dès qu'il les contient */
+const FB={mar:[43.3028,5.3806],aix:[43.5256,5.4552],tou:[43.1283,5.9302],avi:[43.9418,4.8057],tgv:[43.9217,4.7864],nic:[43.7048,7.2619],can:[43.5539,7.0191],arl:[43.6776,4.6320],mir:[43.5852,5.0010],cav:[43.8386,5.0374],gap:[44.5583,6.0820],brc:[44.8996,6.6431],vey:[44.5336,5.8097],hye:[43.1207,6.1295],arc:[43.4678,6.4817],srv:[43.4233,6.7681],men:[43.7761,7.4945],vin:[43.7886,7.6073],gra:[43.6553,6.9241],bre:[43.9336,7.5140],ten:[44.0926,7.5938],ora:[44.1365,4.8162],cpt:[44.0540,5.0467],tar:[43.8052,4.6551],nim:[43.8325,4.3662],lun:[43.6777,4.1355],mpl:[43.6032,3.8785],val:[44.9334,4.8916],lyp:[45.7606,4.8603],lyo:[45.7487,4.8265],gre:[45.1915,5.7143],liv:[44.7694,4.8431],die:[44.7536,5.3699],cre:[44.7275,5.0230],mtl:[44.5576,4.7445],pie:[44.3765,4.6963],vie:[45.5250,4.8750],tai:[45.0678,4.8348],ist:[43.5085,4.9876],mtg:[43.4067,5.0556],aub:[43.2925,5.5703],cio:[43.1771,5.6082],sal:[43.6412,5.0985],bol:[44.2801,4.7447],cle:[44.8106,5.6290],vif:[45.0467,5.6805],frej:[43.4306,6.7357],ant2:[43.5826,7.1233],cag:[43.6637,7.1500],per:[43.6869,5.5031],man:[43.8330,5.7860],sis:[44.1964,5.9450],emb:[44.5652,6.4943],mdg:[44.6704,6.6406],mon2:[43.7347,7.4204],cap:[43.7254,7.4033]};
+const geoXY=id=>(H&&H.coords&&H.coords[id])||FB[id]||null;
+function leafletLoad(ok,fail){
+  if(window.L)return ok();
+  if(GEO.loading)return;GEO.loading=true;
+  const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);
+  const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  s.onload=()=>{GEO.loading=false;ok()};
+  s.onerror=()=>{GEO.loading=false;fail&&fail()};
+  document.head.appendChild(s);
+}
+function geoInit(){
+  const Lf=window.L,g=document.getElementById('geo');
+  GEO.map=Lf.map(g,{zoomControl:false,minZoom:5,maxZoom:18,zoomSnap:.5}).setView([44.4,5.6],7);
+  GEO.map.attributionControl.setPosition('bottomleft');
+  GEO.lnG=Lf.layerGroup().addTo(GEO.map);GEO.stnG=Lf.layerGroup().addTo(GEO.map);GEO.trG=Lf.layerGroup().addTo(GEO.map);
+  const z=()=>{const k=GEO.map.getZoom();g.classList.toggle('z9',k>=9);g.classList.toggle('z11',k>=11)};
+  GEO.map.on('zoomend',z);z();
+  'pointerdown pointermove pointerup mousedown touchstart touchmove touchend wheel click dblclick'.split(' ').forEach(ev=>g.addEventListener(ev,e=>e.stopPropagation(),{passive:true}));
+}
+function geoSetBase(v){
+  const Lf=window.L,g=document.getElementById('geo');
+  if(GEO.base){GEO.map.removeLayer(GEO.base);GEO.base=null}
+  if(GEO.over){GEO.map.removeLayer(GEO.over);GEO.over=null}
+  if(v==='sat'){
+    GEO.base=Lf.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Imagerie © Esri, Maxar, Earthstar Geographics'});
+    GEO.over=Lf.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,opacity:.9});
+    GEO.base.addTo(GEO.map);GEO.over.addTo(GEO.map);g.classList.add('sat');
+  }else{
+    GEO.base=Lf.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributeurs'});
+    GEO.base.addTo(GEO.map);g.classList.remove('sat');
+  }
+}
+function drawGeo(){
+  const Lf=window.L;GEO.lnG.clearLayers();GEO.stnG.clearLayers();GEO.lines.clear();
+  let miss=0;
+  LINES.forEach((L,i)=>{
+    const pts=L.nodes.map(geoXY).filter(Boolean);if(pts.length<2)return;
+    const pl=Lf.polyline(pts,{color:L.c,weight:Math.max(3,9-i*.4),opacity:.9,lineJoin:'round'}).addTo(GEO.lnG);
+    pl.on('click',()=>{sel=L.id;curSt=null;showLine(L.id);paint()});
+    GEO.lines.set(L.id,pl);
+  });
+  Object.values(N).forEach(n=>{
+    if(n.t!=1)return;const c=geoXY(n.id);if(!c){miss++;return}
+    const mk=Lf.circleMarker(c,{radius:n.major?7:4.5,color:'#12306b',weight:2.5,fillColor:'#fff',fillOpacity:1}).addTo(GEO.stnG);
+    mk.bindTooltip(esc(n.name),{permanent:true,direction:'right',offset:[6,0],className:'gl'+(n.major?' gm':'')});
+    mk.on('click',()=>{curSt=n.id;showStation(n.id);paint()});
+  });
+  GEO.partial=!(H&&H.coords)||miss>5;GEO.drawn=true;
+  const note=document.getElementById('note');
+  if(GEO.on)note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles (lance « Mise à jour des horaires »)':'Tracé d\'après les coordonnées GPS des gares';
+}
+function geoFit(){
+  if(!GEO.map)return;
+  const pts=Object.values(N).filter(n=>n.t==1).map(n=>geoXY(n.id)).filter(Boolean);
+  if(pts.length)GEO.map.fitBounds(pts,{paddingTopLeft:[24,150],paddingBottomRight:[24,50],animate:false});
+  GEO.fitted=true;
+}
+function geoStyle(){
+  if(typeof GEO==='undefined'||!GEO||!GEO.on)return;
+  GEO.lines.forEach((pl,id)=>pl.setStyle({opacity:!sel?.9:(sel===id?.98:.14)}));
+  if(sel&&sel!==GEO.lastSel&&GEO.lines.get(sel))GEO.map.fitBounds(GEO.lines.get(sel).getBounds(),{paddingTopLeft:[24,150],paddingBottomRight:[24,60]});
+  GEO.lastSel=sel;
+}
+function geoReload(){if(GEO.on){GEO.drawn=false;drawGeo();geoFit();geoStyle()}}
+function applyView(){
+  const g=document.getElementById('geo'),v=SET.view,note=document.getElementById('note');
+  document.getElementById('zv').classList.toggle('on',v!=='schema');
+  if(v==='schema'){
+    GEO.on=false;g.style.display='none';svg.style.visibility='';note.textContent='Plan schématique, desserte indicative';
+    geoClearTrains();trnTick();return;
+  }
+  note.textContent='Chargement de la carte…';
+  leafletLoad(()=>{
+    if(!GEO.map)geoInit();
+    g.style.display='block';GEO.on=true;svg.style.visibility='hidden';
+    geoSetBase(v);GEO.map.invalidateSize();
+    if(!GEO.drawn)drawGeo();else note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles':'Tracé d\'après les coordonnées GPS des gares';
+    if(!GEO.fitted)geoFit();
+    geoStyle();trnTick();
+  },()=>{SET.view='schema';saveSet();applyView();note.textContent='Carte indisponible (hors connexion ?) : retour au schéma'});
+}
+function geoPathBetween(a,b){
+  const k=a+'|'+b;GPC[k]||(()=>{
+    const ids=pathBetween(a,b).ids;let pts=ids.map(geoXY).filter(Boolean);
+    const A=geoXY(a),B=geoXY(b);if(A&&(!pts.length||pts[0]!==A))pts.unshift(A);if(B&&pts[pts.length-1]!==B)pts.push(B);
+    const cum=[0];for(let i=1;i<pts.length;i++){const la=(pts[i][0]+pts[i-1][0])/2*Math.PI/180;cum.push(cum[i-1]+Math.hypot((pts[i][1]-pts[i-1][1])*Math.cos(la),pts[i][0]-pts[i-1][0]))}
+    GPC[k]={pts,cum,total:cum[cum.length-1]||1};
+  })();
+  return GPC[k];
+}
+var GPC={};
+function geoPos(tr,m){
+  const P=tr.pts;
+  for(let i=0;i<P.length-1;i++){
+    const a=P[i],b=P[i+1];if(m<a.t||m>b.t)continue;
+    const A=geoXY(a.sid);if(!A)return null;
+    if(a.sid===b.sid||b.t===a.t)return A;
+    if(!geoXY(b.sid))return null;
+    const p=geoPathBetween(a.sid,b.sid),d=(m-a.t)/(b.t-a.t)*p.total;
+    let j=1;while(j<p.cum.length-1&&p.cum[j]<d)j++;
+    const s=p.cum[j]-p.cum[j-1]||1,f=Math.max(0,Math.min(1,(d-p.cum[j-1])/s));
+    return[p.pts[j-1][0]+(p.pts[j][0]-p.pts[j-1][0])*f,p.pts[j-1][1]+(p.pts[j][1]-p.pts[j-1][1])*f];
+  }
+  return null;
+}
+function geoTrains(todo,m){
+  const Lf=window.L,seen=new Set();let n=0;
+  todo.forEach(({tr,i,inc,canc})=>{
+    const pos=geoPos(tr,m);if(!pos)return;
+    n++;seen.add(i);
+    const col=TCOL[tr.typ]||(tr.lid&&LINE[tr.lid]?LINE[tr.lid].c:'#1b7be6');
+    const cls='gt'+(canc?' canc':'')+((inc&&SET.perturb&&!canc)?(inc.sev==='hi'?' hot':' warn'):'');
+    const lab=[SET.type&&tl(tr.typ),SET.num&&tr.num,SET.dest&&('→ '+shortN(tr.dest))].filter(Boolean).join(' ');
+    let o=GEO.trs.get(i);
+    if(!o){
+      const icon=Lf.divIcon({className:'',html:`<div class="${cls}"><i style="background:${col}"></i><b>${esc(lab)}</b></div>`,iconSize:[16,16],iconAnchor:[8,8]});
+      const mk=Lf.marker(pos,{icon,zIndexOffset:500,keyboard:false}).addTo(GEO.trG);
+      mk.on('click',()=>trainInfoTr(tr));
+      o={mk,cls,lab};GEO.trs.set(i,o);
+    }else{
+      o.mk.setLatLng(pos);
+      const el=o.mk.getElement(),g=el&&el.firstChild;
+      if(g){if(cls!==o.cls){g.className=cls;o.cls=cls}if(lab!==o.lab){g.querySelector('b').textContent=lab;o.lab=lab}}
+    }
+  });
+  GEO.trs.forEach((o,i)=>{if(!seen.has(i)){GEO.trG.removeLayer(o.mk);GEO.trs.delete(i)}});
+  return n;
+}
+function geoClearTrains(){if(GEO.trG)GEO.trG.clearLayers();GEO.trs.clear()}
+document.getElementById('zv').addEventListener('click',()=>{
+  if(SET.view==='schema')SET.view=SET.last||'sat';else{SET.last=SET.view;SET.view='schema'}
+  saveSet();applyView();
+  if(sheet.dataset.m==='set')sheet.innerHTML='<div class="grab"></div>'+setHtml();
+});
+sheet.addEventListener('click',e=>{
+  const b=e.target.closest('[data-vw]');if(!b)return;
+  SET.view=b.dataset.vw;if(SET.view!=='schema')SET.last=SET.view;saveSet();applyView();
+  sheet.querySelectorAll('[data-vw]').forEach(x=>x.classList.toggle('on',x===b));
+});
+if(SET.view!=='schema')applyView();
+
+/* ===================== RECHERCHE TOUTE LA FRANCE (Google Maps, en liste) ===================== */
+const gkey=()=>{try{return localStorage.getItem('ter-gkey')||''}catch(e){return ''}};
+sheet.addEventListener('change',e=>{if(e.target.id==='gkey'){try{localStorage.setItem('ter-gkey',e.target.value.trim())}catch(x){}}});
+const gmLink=()=>`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(TP.gf)}&destination=${encodeURIComponent(TP.gt)}&travelmode=transit`;
+function gHint(){
+  const box=document.getElementById('tpres');if(!box)return;
+  const ok=TP.gf&&TP.gt,link=ok?`<a class="gm-link" href="${gmLink()}" target="_blank" rel="noopener">Ouvrir dans Google Maps ↗</a>`:'';
+  if(!gkey()){box.dataset.g='';box.innerHTML=`<p class="bd-note">Tape deux villes ou gares n'importe où en France. Pour afficher les horaires ici, ajoute une clé API Google Maps dans <b>Réglages</b> ; sinon ouvre la recherche directement dans Google Maps.</p>${link}`;return}
+  const go=document.getElementById('tpgo');
+  if(go&&box.dataset.g==='hint'){ // ne pas recréer le bouton : un re-rendu pendant le tap annulerait le clic
+    go.disabled=!ok;const lk=box.querySelector('.gm-link');if(lk){if(ok)lk.href=gmLink();lk.parentNode.style.display=ok?'':'none'}
+    return;
+  }
+  box.dataset.g='hint';
+  box.innerHTML=`<button class="cmp-b wide" id="tpgo"${ok?'':' disabled'}>Rechercher dans toute la France</button><div${link?'':' style="display:none"'}>${link||'<a class="gm-link" target="_blank" rel="noopener">Ouvrir dans Google Maps ↗</a>'}</div><p class="bd-note">Les résultats viennent de Google Maps (horaires théoriques ou prévisionnels) et s'affichent en liste, pas sur la carte.</p>`;
+}
+const VEH={HEAVY_RAIL:'Train',RAIL:'Train',COMMUTER_TRAIN:'TER',HIGH_SPEED_TRAIN:'TGV',LONG_DISTANCE_TRAIN:'Intercités',INTERCITY_BUS:'Car',BUS:'Bus',TRAM:'Tram',SUBWAY:'Métro',METRO_RAIL:'Métro',LIGHT_RAIL:'Tram',TROLLEYBUS:'Trolley',FERRY:'Bateau',MONORAIL:'Monorail'};
+const gT=(s,loc)=>{const t=loc&&loc.time&&loc.time.text;if(t)return t;const d=new Date(s);return isNaN(d)?'':pad(d.getHours())+':'+pad(d.getMinutes())};
+async function gSearch(){
+  const box=document.getElementById('tpres');if(!box)return;
+  if(!TP.gf||!TP.gt){gHint();return}
+  box.dataset.g='';box.innerHTML='<div class="skel tall"></div>';
+  const hm=(TP.time||nowHM()).split(':').map(Number),d=new Date();d.setDate(d.getDate()+TP.day);d.setHours(hm[0],hm[1],0,0);
+  const body={origin:{address:TP.gf},destination:{address:TP.gt},travelMode:'TRANSIT',computeAlternativeRoutes:true,languageCode:'fr-FR',regionCode:'FR',
+    transitPreferences:{allowedTravelModes:TP.gall?['BUS','SUBWAY','TRAIN','LIGHT_RAIL','RAIL']:['TRAIN','RAIL']}};
+  if(TP.mode==='arr')body.arrivalTime=d.toISOString();else body.departureTime=d.toISOString();
+  const mask='routes.duration,routes.localizedValues,routes.legs.steps.travelMode,routes.legs.steps.localizedValues,routes.legs.steps.transitDetails';
+  const link=`<a class="gm-link" href="${gmLink()}" target="_blank" rel="noopener">Ouvrir dans Google Maps ↗</a>`;
+  try{
+    const r=await fetch('https://routes.googleapis.com/directions/v2:computeRoutes',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gkey(),'X-Goog-FieldMask':mask},body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){box.innerHTML=`<p class="bd-note warn">Google Maps a refusé la demande : ${esc((j.error&&j.error.message)||r.status)}</p>${link}`;return}
+    const routes=j.routes||[];
+    if(!routes.length){box.innerHTML=`<p class="bd-note warn">Aucun itinéraire trouvé à ce moment-là.</p>${link}`;return}
+    box.innerHTML=routes.map(rt=>{
+      const steps=(rt.legs&&rt.legs[0]&&rt.legs[0].steps)||[],tr=steps.filter(s=>s.transitDetails);
+      const f=tr[0]&&tr[0].transitDetails,l=tr[tr.length-1]&&tr[tr.length-1].transitDetails;
+      const dep=f?gT(f.stopDetails.departureTime,f.localizedValues&&f.localizedValues.departureTime):'',arr=l?gT(l.stopDetails.arrivalTime,l.localizedValues&&l.localizedValues.arrivalTime):'';
+      const dur=(rt.localizedValues&&rt.localizedValues.duration&&rt.localizedValues.duration.text)||'';
+      const list=steps.map(s=>{
+        const t=s.transitDetails;
+        if(!t)return s.localizedValues&&s.localizedValues.staticDuration?`<div class="gm-st"><span style="color:var(--muted)">Marche ${esc(s.localizedValues.staticDuration.text)}</span></div>`:'';
+        const ln=t.transitLine||{},v=ln.vehicle||{},name=(ln.nameShort||ln.name||'').trim(),sd=t.stopDetails||{};
+        return `<div class="gm-st"><span class="tr-pill">${esc(VEH[v.type]||(v.name&&v.name.text)||'Transport')}</span><span><b>${esc(name)}</b> ${t.headsign?'→ '+esc(t.headsign):''}<small>${esc(gT(sd.departureTime,t.localizedValues&&t.localizedValues.departureTime))} ${esc((sd.departureStop||{}).name||'')} → ${esc(gT(sd.arrivalTime,t.localizedValues&&t.localizedValues.arrivalTime))} ${esc((sd.arrivalStop||{}).name||'')}${t.stopCount?' · '+t.stopCount+' arrêts':''}</small></span></div>`}).join('');
+      return `<div class="gm-r"><div class="tp-t"><b>${esc(dep)}</b><span>→</span><b>${esc(arr)}</b><em>${esc(dur)}</em><span class="tp-c${tr.length>1?' x':''}">${tr.length>1?(tr.length-1)+' corresp.':'Direct'}</span></div>${list}</div>`}).join('')
+      +`${link}<p class="bd-note">Source : Google Maps. Horaires donnés à titre indicatif.</p>`;
+  }catch(err){
+    box.innerHTML=`<p class="bd-note warn">Impossible de joindre Google Maps depuis le navigateur (réseau ou restriction de la clé).</p>${link}`;
+  }
+}
+sheet.addEventListener('click',e=>{
+  const ts=e.target.closest('[data-ts]');
+  if(ts){TP.src=ts.dataset.ts;sheet.innerHTML='<div class="grab"></div>'+tpHtml();tpSearch();return}
+  if(e.target.closest('#tpgo'))gSearch();
 });
 
 window.addEventListener('resize',()=>{liftZoom();if(!ptrs.size){const k=TT.k/fitK;fit();if(k>1.02){TT.k=fitK*k;apply()}}});
