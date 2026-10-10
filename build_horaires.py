@@ -30,7 +30,7 @@ import zipfile
 GTFS_URL = "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip"
 
 # Zone PACA (large) : évite de confondre des gares homonymes ailleurs en France.
-BBOX = (42.9, 45.2, 4.2, 7.8)  # lat min, lat max, lon min, lon max
+BBOX = (42.9, 46.0, 3.5, 8.0)  # lat min, lat max, lon min, lon max (PACA + Nîmes, Montpellier, Valence, Grenoble, Lyon)
 
 # Si une gare n'est pas reconnue automatiquement, force le nom GTFS exact ici.
 # Exemple : {"mar": "Marseille Saint-Charles"}
@@ -122,10 +122,11 @@ def main():
         if r.get("location_type", "") not in ("", "0", "1"):
             continue
         if BBOX[0] <= lat <= BBOX[1] and BBOX[2] <= lon <= BBOX[3]:
-            by_key.setdefault(key(r["stop_name"]), {"name": r["stop_name"], "ids": set()})["ids"].add(r["stop_id"])
+            g = by_key.setdefault(key(r["stop_name"]), {"name": r["stop_name"], "ids": set(), "pos": (lat, lon)})
+            g["ids"].add(r["stop_id"])
 
     # 2) Rapprochement gare du plan <-> gare GTFS
-    stop_to_map, matched, weak, missing = {}, {}, [], []
+    stop_to_map, matched, weak, missing, coords = {}, {}, [], [], {}
     for sid, name in stations.items():
         if sid in OVERRIDES:
             best = (1.0, by_key.get(key(OVERRIDES[sid])))
@@ -140,6 +141,7 @@ def main():
             missing.append(f"{sid} ({name})")
             continue
         matched[sid] = best[1]["name"]
+        coords[sid] = [round(best[1]["pos"][0], 5), round(best[1]["pos"][1], 5)]
         for stop_id in best[1]["ids"]:
             stop_to_map.setdefault(stop_id, []).append(sid)
         if best[0] < 0.95:
@@ -190,7 +192,9 @@ def main():
             continue
         if svc.get(r["service_id"], 0):
             num = (r.get("trip_short_name") or r.get("trip_headsign") or "").strip()
-            trips[r["trip_id"]] = (r["service_id"], num, typ)
+            if not typ:
+                typ = kind(r["trip_id"] + " " + r.get("trip_headsign", ""))
+            trips[r["trip_id"]] = (r["service_id"], num, typ, r["route_id"])
 
     # 5) Arrêts de chaque voyage (on garde tout : premier, dernier et gares du plan)
     rows = {}
@@ -216,14 +220,20 @@ def main():
         return [items[(i + 1) * len(items) // (n + 1)] for i in range(n)]
 
     out = {sid: {"d": {}, "a": {}} for sid in matched}
+    tcount, unknown = {}, []
     for tid, rs in rows.items():
         rs.sort()
-        service, num, typ = trips[tid]
+        service, num, typ, route_id = trips[tid]
         first, last = rs[0], rs[-1]
         if not typ:
             typ = kind(first[1])  # les ids d'arrêts SNCF contiennent le produit (OCEOUIGO, OCETGV INOUI, OCETrain TER…)
+        if not typ:
+            typ = kind(route_id)
         if not typ and len(re.sub(r"\D", "", num)) >= 5:
             typ = "TER"  # numéros à 5-6 chiffres = TER (repli quand la route n'indique pas le type)
+        tcount[typ or "(non reconnu)"] = tcount.get(typ or "(non reconnu)", 0) + 1
+        if not typ and len(unknown) < 6:
+            unknown.append(f"trip_id={tid} route_id={route_id} 1er arrêt={first[1]} n°={num}")
         mapped = [x for x in rs if x[1] in stop_to_map]
         for idx, x in enumerate(mapped):
             seq, stop_id, arr, dep, pu, do = x
@@ -255,6 +265,7 @@ def main():
         "start": start.isoformat(),
         "days": days,
         "source": "SNCF Open Data (ODbL) - horaires-sncf",
+        "coords": coords,
         "stopmap": {k: v for k, v in stop_to_map.items()},
         "stations": {sid: {"d": pack(v["d"]), "a": pack(v["a"])} for sid, v in out.items()},
     }
@@ -264,6 +275,9 @@ def main():
     nd = sum(len(v["d"]) for v in result["stations"].values())
     na = sum(len(v["a"]) for v in result["stations"].values())
     print(f"{len(matched)}/{len(stations)} gares rapprochées, {nd} départs, {na} arrivées -> {a.out}", file=sys.stderr)
+    print("Types de trains : " + ", ".join(f"{k} {v}" for k, v in sorted(tcount.items(), key=lambda kv: -kv[1])), file=sys.stderr)
+    if unknown:
+        print("Exemples de trains au type non reconnu :\n  " + "\n  ".join(unknown), file=sys.stderr)
     if weak:
         print("\nRapprochements à vérifier :\n  " + "\n  ".join(weak), file=sys.stderr)
     if missing:
@@ -272,3 +286,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+  
