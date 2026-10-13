@@ -1,0 +1,48 @@
+# Remplace le contenu de .github/workflows/horaires.yml
+name: Mise à jour des horaires
+
+on:
+  schedule:
+    # 4 fois par jour. GitHub compte en heure UTC : 22h, 4h, 10h et 16h UTC = 0h, 6h, 12h, 18h à Paris en heure d'été
+    # (en heure d'hiver : 23h, 5h, 11h, 17h). Les minutes décalées (:07) évitent l'embouteillage de GitHub à l'heure pile.
+    - cron: "7 22,4,10,16 * * *"
+  workflow_dispatch:          # bouton « Run workflow »
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maj-donnees          # un seul workflow de données à la fois (évite les conflits de push)
+  cancel-in-progress: false
+
+jobs:
+  horaires:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vérifie que les scripts sont à jour
+        run: |
+          grep -q "france-days" build_horaires.py || { echo "ERREUR : build_horaires.py du dépôt est une ancienne version, remplace-le par la nouvelle."; exit 1; }
+          test -f index.html || { echo "ERREUR : index.html introuvable à la racine du dépôt."; exit 1; }
+      - name: Génère horaires-paca.json, horaires-france.json et stops-france.json
+        run: python build_horaires.py --html index.html --days 14 --france-days 7
+      - name: Vérifie que les 3 fichiers existent
+        run: |
+          for f in horaires-paca.json horaires-france.json stops-france.json; do
+            test -s "$f" || { echo "Fichier manquant ou vide : $f"; exit 1; }
+            ls -lh "$f"
+          done
+      - name: Enregistre dans le dépôt
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add horaires-paca.json horaires-france.json stops-france.json
+          if git diff --staged --quiet; then echo "Rien à enregistrer"; exit 0; fi
+          git commit -m "Horaires du $(date +%F)"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
+          
