@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Remplace par l'adresse réelle du site (puis, plus tard, par le nom de domaine)
+Sitemap: https://natlacaxi.github.io/train/sitemap.xml
