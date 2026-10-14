@@ -3,7 +3,7 @@
    - Icônes et bibliothèque de carte : cache d'abord.
    - Fonds de carte (tuiles) et autres sites : laissés au navigateur.
    Pour forcer la mise à jour chez tout le monde, change le numéro de VERSION ci-dessous. */
-const VERSION = 'v30';
+const VERSION = 'v31';
 const STATIC = 'ter-static-' + VERSION;
 const DATA = 'ter-data-' + VERSION;
 
