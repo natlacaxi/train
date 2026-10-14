@@ -1,0 +1,43 @@
+# Crée .github/workflows/geometrie.yml
+name: Tracé des voies (OpenStreetMap)
+
+on:
+  schedule:
+    - cron: "17 3 1 * *"      # une fois par mois (les voies ne changent presque jamais)
+  workflow_dispatch:          # bouton « Run workflow » : à lancer UNE FOIS à l'installation
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maj-donnees
+  cancel-in-progress: false
+
+jobs:
+  geometrie:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vérifie les fichiers
+        run: |
+          test -f geom-paires.json || { echo "ERREUR : geom-paires.json manquant à la racine du dépôt."; exit 1; }
+          test -f build_geometrie.py || { echo "ERREUR : build_geometrie.py manquant à la racine du dépôt."; exit 1; }
+      - name: Télécharge les voies OpenStreetMap et calcule les tracés
+        run: python build_geometrie.py --paires geom-paires.json --out geom-lignes.json --cache .tuiles
+      - name: Vérifie le résultat
+        run: |
+          test -s geom-lignes.json || { echo "geom-lignes.json vide"; exit 1; }
+          ls -lh geom-lignes.json
+      - name: Enregistre dans le dépôt
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add geom-lignes.json
+          if git diff --staged --quiet; then echo "Rien à enregistrer"; exit 0; fi
+          git commit -m "Tracé des voies du $(date +%F)"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
