@@ -381,6 +381,13 @@ table.cmp tr.sum td{background:var(--chip);font-weight:700}
 .tp-n{font-weight:800;font-variant-numeric:tabular-nums}
 .tp-s{display:flex;flex-direction:column;min-width:0;font-size:13.5px;font-weight:650}
 .tp-s small{color:var(--muted);font-weight:600;font-size:12px}
+.tp-t[data-jr]{cursor:pointer}
+.tp-more{margin-left:auto;font-size:12.5px;font-weight:800;color:#1E6FD9;white-space:nowrap}
+.jr-sum{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:15px;margin:2px 0 6px}.jr-sum b{font-size:24px;font-variant-numeric:tabular-nums}
+.jr-leg{border:1px solid var(--bd);border-radius:14px;padding:8px 12px 4px;margin:10px 0;background:var(--chip)}
+.jr-lh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:14px}
+.jr-x{border-left:4px solid #f39200;background:rgba(243,146,0,.12);border-radius:10px;padding:8px 12px;margin:10px 0;font-size:14px}
+.jr-x.short{border-left-color:#d93025;background:rgba(217,48,37,.10)}
 .tp-x{margin-top:7px;font-size:12.5px;color:var(--muted);padding-left:4px}
 .cmp-row[hidden]{display:none}
 /* installation */
@@ -1685,10 +1692,10 @@ function tpSearchPlan(){
     const legs=o.legs.map((l,k)=>{const tr=l.tr;
       return (k?`<div class="tp-x">Correspondance à <b>${esc(N[l.from].name)}</b> · ${hh(Math.floor(o.legs[k-1].arr))} → ${hh(Math.floor(l.dep))} (${Math.round(l.dep-o.legs[k-1].arr)} min)</div>`:'')+
       `<button class="tp-leg" data-r="${i}" data-l="${k}"><span class="tr-pill k-${esc(tr.typ||'')}">${esc(tl(tr.typ||'TER'))}</span><span class="tp-n">${esc(tr.num||'')}</span><span class="tp-s">${esc(N[l.from].name)} → ${esc(N[l.to].name)}<small>${hh(Math.floor(l.dep))} → ${hh(Math.floor(l.arr))} · vers ${esc(shortN(tr.dest))}</small></span>${tag(tr)}</button>`}).join('');
-    return `<div class="tp-r"><div class="tp-t"><b>${hh(Math.floor(o.dep))}</b><span>→</span><b>${hh(Math.floor(o.arr))}</b><em>${dur(o.arr-o.dep)}</em><span class="tp-c${o.legs.length>1?' x':''}">${o.legs.length>1?'1 correspondance':'Direct'}</span></div>${legs}</div>`}).join('')
+    return `<div class="tp-r"><div class="tp-t" data-jr="pl,${i}"><b>${hh(Math.floor(o.dep))}</b><span>→</span><b>${hh(Math.floor(o.arr))}</b><em>${dur(o.arr-o.dep)}</em><span class="tp-c${o.legs.length>1?' x':''}">${o.legs.length>1?'1 correspondance':'Direct'}</span><span class="tp-more">Détails ›</span></div>${legs}</div>`}).join('')
     :`<p class="bd-note warn">Aucun train trouvé ${TP.mode==='dep'?'après':'avant'} ${esc(TP.time||nowHM())} ce jour-là${TP.corr?'':'. Essaie en autorisant une correspondance'}.</p>`)
     +(dropped?`<p class="bd-note">${dropped} train${dropped>1?'s':''} supprimé${dropped>1?'s':''} masqué${dropped>1?'s':''}.</p>`:'')
-    +`<p class="bd-note">Horaires théoriques sur le périmètre du plan${Hdemo?' (démonstration)':''}. Touche un train pour voir ses arrêts.</p>`;
+    +`<p class="bd-note">Horaires théoriques sur le périmètre du plan${Hdemo?' (démonstration)':''}. Touche un trajet pour le détail complet (gares, horaires, changements).</p>`;
 }
 
 function tpSearch(){
@@ -1869,11 +1876,46 @@ function frRun(){
       const ty=F.types[l.tr[1]]||'',gap=k?`<div class="tp-x">Correspondance à <b>${esc(FR.stops[l.from])}</b> · ${hhd(o.legs[k-1].arr)} → ${hhd(l.dep)} (${Math.round(l.dep-o.legs[k-1].arr)} min)</div>`:'';
       return gap+`<button class="tp-leg fr-leg" data-fr="${i},${k}"><span class="tr-pill k-${esc(ty)}">${esc(tl(ty||'TER'))}</span><span class="tp-n">${esc(l.tr[0]||'')}</span><span class="tp-s">${esc(FR.stops[l.from])} → ${esc(FR.stops[l.to])}<small>${hhd(l.dep)} → ${hhd(l.arr)} · vers ${esc(shortN(FR.stops[l.tr[l.tr.length-3]]))}</small></span>${incL(l)}</button>`}).join('');
     const w=bad.length?`<p class="tp-w">⚠ ${esc(plain(bad[0].header)||'Perturbation signalée sur un train de ce trajet')}</p>`:'';
-    return `<div class="tp-r"><div class="tp-t"><b>${hhd(o.dep)}</b><span>→</span><b>${hhd(o.arr)}</b><em>${dur(o.arr-o.dep)}</em><span class="tp-c${o.legs.length>1?' x':''}">${o.legs.length>1?(o.legs.length-1)+' changement'+(o.legs.length>2?'s':''):'Direct'}</span></div>${legs}${w}</div>`}).join('')
+    return `<div class="tp-r"><div class="tp-t" data-jr="fr,${i}"><b>${hhd(o.dep)}</b><span>→</span><b>${hhd(o.arr)}</b><em>${dur(o.arr-o.dep)}</em><span class="tp-c${o.legs.length>1?' x':''}">${o.legs.length>1?(o.legs.length-1)+' changement'+(o.legs.length>2?'s':''):'Direct'}</span><span class="tp-more">Détails ›</span></div>${legs}${w}</div>`}).join('')
     :`<p class="bd-note warn">Aucun trajet trouvé ${TP.mode==='dep'?'après':'avant'} ${esc(TP.time||nowHM())} ce jour-là${TP.k<2?'. Essaie d\'autoriser plus de correspondances':''}. Vérifie aussi avec Google Maps ci-dessous.</p>`;
   box.innerHTML=html
     +(dropped?`<p class="bd-note">${dropped} train${dropped>1?'s':''} supprimé${dropped>1?'s':''} aujourd'hui (incidents) exclu${dropped>1?'s':''} du calcul.</p>`:'')
-    +`<a class="gm-link" href="${gmUrl(frPlain(A.label),frPlain(B.label))}" target="_blank" rel="noopener">Comparer avec Google Maps ↗</a><p class="bd-note">Horaires théoriques SNCF, calculés sur l'appareil (${Math.round(performance.now()-t)} ms). Touche un train pour voir ses arrêts.</p>`;
+    +`<a class="gm-link" href="${gmUrl(frPlain(A.label),frPlain(B.label))}" target="_blank" rel="noopener">Comparer avec Google Maps ↗</a><p class="bd-note">Horaires théoriques SNCF, calculés sur l'appareil (${Math.round(performance.now()-t)} ms). Touche un trajet pour le détail complet (gares, horaires, changements).</p>`;
+}
+function jrLegs(kind,o){
+  if(kind==='fr'){const F=FR.data;return o.legs.map(l=>{const tr=l.tr,rows=[];let on=false;
+    for(let p=3;p<tr.length;p+=3){const ta=tr[p+1]>=0?tr[p+1]+l.off:null,td=tr[p+2]>=0?tr[p+2]+l.off:null;
+      if(tr[p]===l.from)on=true;
+      if(on)rows.push({n:F.stops[tr[p]],arr:ta,dep:td});
+      if(on&&tr[p]===l.to&&rows.length>1)break}
+    return{ty:F.types[tr[1]]||'',num:tr[0]||'',dest:F.stops[tr[tr.length-3]],rows,from:F.stops[l.from],to:F.stops[l.to],dep:l.dep,arr:l.arr,inc:incOfNum(tr[0])}})}
+  return o.legs.map(l=>{const tr=l.tr,R=rowsOf(tr),a=R.findIndex(r=>r.sid===l.from),b=R.findIndex((r,k)=>k>a&&r.sid===l.to);
+    const rows=R.slice(a,b+1).map(r=>({n:N[r.sid].name,arr:r.arr,dep:r.dep}));
+    return{ty:tr.typ||'',num:tr.num||'',dest:tr.dest,rows,from:N[l.from].name,to:N[l.to].name,dep:l.dep,arr:l.arr,inc:INC&&INC.by&&tr.num&&INC.by[tr.num]}})
+}
+/* détail complet d'un trajet : chaque train, toutes les gares avec horaires, chaque changement */
+function jrInfo(kind,i){
+  const o=(kind==='fr'?TP.frRes:TP.res)[i];if(!o)return;
+  const L=jrLegs(kind,o),T=x=>x==null?'':hhd(Math.floor(x));
+  const nch=L.length-1;
+  const body=L.map((l,k)=>{
+    let x='';
+    if(k){const w=Math.round(l.dep-L[k-1].arr),sh=w<8;
+      x=`<div class="jr-x${sh?' short':''}"><b>Changement à ${esc(l.from)}</b><br>Arrivée ${T(L[k-1].arr)} · départ ${T(l.dep)} · <b>${w} min</b> de correspondance${sh?' (courte : attention)':''}</div>`}
+    const last=l.rows.length-1;
+    const rows=l.rows.map((r,j)=>{
+      const t=j===0?(r.dep!=null?r.dep:r.arr):(r.arr!=null?r.arr:r.dep);
+      const stay=j>0&&j<last&&r.arr!=null&&r.dep!=null&&r.dep-r.arr>=1?` <small style="color:var(--muted)">(départ ${T(r.dep)})</small>`:'';
+      return`<li class="${j===0||j===last?'now':''}"><b>${T(t)}</b><span>${esc(r.n)}${stay}</span></li>`}).join('');
+    return x+`<div class="jr-leg"><div class="jr-lh"><span class="tr-pill k-${esc(l.ty)}">${esc(tl(l.ty||'TER'))}</span><span>${esc(l.num)}</span><span style="color:var(--muted);font-weight:600">vers ${esc(shortN(l.dest))}</span></div>
+      ${l.inc?`<p style="margin:6px 0 0"><span class="bd-tag s-${esc(l.inc.sev||'lo')}">${esc(plain(l.inc.effect)||'Perturbé')}</span> ${esc(plain(l.inc.header))}</p>`:''}
+      <ol class="tr-st">${rows}</ol></div>`}).join('');
+  openSheet(`<div class="sh-h"><div class="tr-h"><h2>${esc(L[0].from)} → ${esc(L[L.length-1].to)}</h2></div><button class="x" aria-label="Fermer">✕</button></div>
+  <div class="jr-sum"><b>${T(o.dep)}</b><span>→</span><b>${T(o.arr)}</b><em style="font-style:normal;color:var(--muted);font-weight:700">${dur(o.arr-o.dep)} · ${nch?nch+' changement'+(nch>1?'s':''):'Direct'}</em></div>
+  ${body}
+  <div class="cmp-row"><button class="cmp-b alt" data-fback="1">← Retour à la recherche</button></div>
+  <p class="bd-note">Horaires théoriques SNCF.</p>`);
+  sheet.dataset.m='trn';busUi();
 }
 function frTrainInfo(i,k){
   const o=TP.frRes[i];if(!o)return;
@@ -1893,6 +1935,8 @@ function frTrainInfo(i,k){
   sheet.dataset.m='trn';busUi();
 }
 function frClick(e){
+  const jr=e.target.closest('[data-jr]');
+  if(jr&&!e.target.closest('.tp-leg')){const q=jr.dataset.jr.split(',');jrInfo(q[0],+q[1]);return true}
   const sw=e.target.closest('#tpswap');
   if(sw&&TP.src==='fr'){
     const a=TP.fr.from;TP.fr.from=TP.fr.to;TP.fr.to=a;
@@ -1997,12 +2041,32 @@ document.addEventListener('click',e=>{
 var GEO={on:false,map:null,base:null,over:null,lines:new Map(),stnG:null,lnG:null,trG:null,trs:new Map(),loading:false,fitted:false,drawn:false,lastSel:null,partial:false};
 /* coordonnées de secours (grandes gares) : remplacées par celles de horaires-paca.json dès qu'il les contient */
 const FB={g_tour:[47.3894,0.6934],g_anj:[47.4639,-0.5570],g_nan:[47.2175,-1.5420],g_rei:[49.2587,3.9990],g_met:[49.1097,6.1768],g_nct:[48.6896,6.1740],g_arr:[50.2896,2.7800],g_dnk:[51.0346,2.3748],g_ver:[48.7957,2.1349],g_ram:[48.6436,1.8277],g_cht:[48.4482,1.4823],g_sab:[47.8399,-0.3345],g_vit:[48.1190,-1.2070],g_chat:[46.8168,0.5449],g_lib:[44.9190,-0.2440],g_creil:[49.2597,2.4693],g_ami:[49.8911,2.3071],g_dou:[50.3736,3.0770],g_epe:[49.0431,3.9500],g_chl:[48.9540,4.3650],g_toul:[48.6770,5.8920],g_dol:[47.0940,5.4890],g_bvi:[47.2481,6.0232],g_bfr:[47.6334,6.8540],g_mod:[45.1978,6.6643],g_atgv:[43.4553,5.3175],g_pmo:[48.8412,2.3203],g_mas:[48.7263,2.2584],g_ven:[47.8217,1.0136],g_lm:[47.9954,0.1916],g_spc:[47.3868,0.7248],g_poi:[46.5827,0.3326],g_ang:[45.6513,0.1650],g_bdx:[44.8260,-0.5560],g_lav:[48.0689,-0.7743],g_ren:[48.1036,-1.6720],g_pno:[48.8809,2.3553],g_cdg:[49.0042,2.5714],g_hpic:[49.8587,2.8307],g_lil:[50.6395,3.0757],g_cal:[50.9396,1.8004],g_mlv:[48.8703,2.7823],g_pest:[48.8768,2.3594],g_cha:[49.2100,4.0300],g_meu:[48.9856,5.2639],g_lor:[48.9490,6.1795],g_str:[48.5850,7.7340],g_bes:[47.3072,6.0870],g_bel:[47.5880,6.9033],g_mul:[47.7420,7.3430],g_npg:[43.7570,4.4740],g_msf:[43.5873,3.9390],g_fig:[42.2678,2.9692],g_ctv:[46.7634,4.4074],g_mlt:[46.2822,4.7767],g_lse:[45.7211,5.0770],g_vtg:[44.9908,4.9789],m_sete:[43.4075,3.6995],m_agd:[43.3135,3.4730],m_bez:[43.3412,3.2183],m_nar:[43.1819,3.0036],m_per:[42.6962,2.8795],m_car:[43.2194,2.3547],m_amb:[45.9606,5.3306],m_cul:[45.8442,5.7886],m_ccy:[45.5686,5.9175],p_vil:[45.989,4.723],p_mac:[46.3033,4.8368],p_cha:[46.7817,4.8451],p_bea:[47.0236,4.835],p_dij:[47.3234,5.0267],p_mon:[47.6234,4.3394],p_lar:[47.9633,3.4916],p_sen:[48.1964,3.2883],p_mto:[48.3836,2.9567],p_mel:[48.5375,2.6586],p_par:[48.8443,2.3744],mar:[43.3028,5.3806],aix:[43.5256,5.4552],tou:[43.1283,5.9302],avi:[43.9418,4.8057],tgv:[43.9217,4.7864],nic:[43.7048,7.2619],can:[43.5539,7.0191],arl:[43.6776,4.6320],mir:[43.5852,5.0010],cav:[43.8386,5.0374],gap:[44.5583,6.0820],brc:[44.8996,6.6431],vey:[44.5336,5.8097],hye:[43.1207,6.1295],arc:[43.4678,6.4817],srv:[43.4233,6.7681],men:[43.7761,7.4945],vin:[43.7886,7.6073],gra:[43.6553,6.9241],bre:[43.9336,7.5140],ten:[44.0926,7.5938],ora:[44.1365,4.8162],cpt:[44.0540,5.0467],tar:[43.8052,4.6551],nim:[43.8325,4.3662],lun:[43.6777,4.1355],mpl:[43.6032,3.8785],val:[44.9334,4.8916],lyp:[45.7606,4.8603],lyo:[45.7487,4.8265],gre:[45.1915,5.7143],liv:[44.7694,4.8431],die:[44.7536,5.3699],cre:[44.7275,5.0230],mtl:[44.5576,4.7445],pie:[44.3765,4.6963],vie:[45.5250,4.8750],tai:[45.0678,4.8348],ist:[43.5085,4.9876],mtg:[43.4067,5.0556],aub:[43.2925,5.5703],cio:[43.1771,5.6082],sal:[43.6412,5.0985],bol:[44.2801,4.7447],cle:[44.8106,5.6290],vif:[45.0467,5.6805],frej:[43.4306,6.7357],ant2:[43.5826,7.1233],cag:[43.6637,7.1500],per:[43.6869,5.5031],man:[43.8330,5.7860],sis:[44.1964,5.9450],emb:[44.5652,6.4943],mdg:[44.6704,6.6406],mon2:[43.7347,7.4204],cap:[43.7254,7.4033]};
+/* corrections GPS vérifiées à la main : prioritaires sur horaires-paca.json (rapprochements de noms erronés) */
+const FIX={p_mel:[48.5271,2.6596],m_ccy:[45.5712,5.9187],luc:[43.3939,6.3128],cio:[43.1745,5.6046],cey:[43.1996,5.6327],sor:[44.0067,4.8723],ent:[44.0105,4.9122]};
+/* tracés réels des voies (OpenStreetMap), produits par build_geometrie.py : segments entre gares consécutives */
+var GEOM=null,GEOMQ=0;
+function geomLoad(){
+  if(GEOMQ)return;GEOMQ=1;
+  fetch('geom-lignes.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{
+    if(!j||j.v!==1||!j.e)return;
+    GEOM=j.e;GPC={};
+    if(GEO.on){GEO.drawn=false;drawGeo();geoStyle();geoClearTrains();trnTick()}
+  }).catch(()=>{});
+}
+/* points [lat,lon] de a vers b en suivant la voie réelle (f : 'h' grande vitesse, 'c' ligne classique) ; sinon ligne droite */
+function geoSeg(a,b,f){
+  if(GEOM){
+    const asc=a<b,k=(asc?a+'|'+b:b+'|'+a)+'|',t=GEOM[k+f]||GEOM[k+(f==='h'?'c':'h')];
+    if(t)return asc?t:t.slice().reverse();
+  }
+  const A=geoXY(a),B=geoXY(b);return A&&B?[A,B]:null;
+}
 var GXY=null;
 const geoXY=id=>{if(!GXY)geoBuild();return GXY[id]||null};
 function geoBuild(){
   /* 1) positions connues (fichier horaires + table de secours) */
   const known={};
-  Object.keys(N).forEach(id=>{const c=(H&&H.coords&&H.coords[id])||FB[id];if(c)known[id]=c});
+  Object.keys(N).forEach(id=>{const c=FIX[id]||(H&&H.coords&&H.coords[id])||FB[id];if(c)known[id]=c});
   const res=Object.assign({},known),acc={};
   /* 2) nœuds sans position : interpolés le long de chaque ligne entre deux nœuds connus */
   LINES.forEach(L=>{
@@ -2069,7 +2133,9 @@ function drawGeo(){
   const Lf=window.L;GEO.lnG.clearLayers();GEO.stnG.clearLayers();GEO.lines.clear();
   let miss=0;
   LINES.forEach((L,i)=>{
-    const pts=L.nodes.filter(id=>N[id].t===1).map(geoXY).filter(Boolean);if(pts.length<2)return;
+    const ids=L.nodes.filter(id=>N[id].t===1),fl=GVK.has(L.k)?'h':'c';let pts=[];
+    for(let q=1;q<ids.length;q++){const sg=geoSeg(ids[q-1],ids[q],fl);if(!sg)continue;pts=pts.length?pts.concat(sg.slice(1)):sg.slice()}
+    if(pts.length<2)return;
     const pl=Lf.polyline(pts,{color:L.c,weight:Math.max(3,9-i*.4),opacity:.9,lineJoin:'round'}).addTo(GEO.lnG);
     pl.on('click',()=>{sel=L.id;curSt=null;showLine(L.id);paint()});
     GEO.lines.set(L.id,pl);
@@ -2080,9 +2146,9 @@ function drawGeo(){
     mk.bindTooltip(esc(n.name),{permanent:true,direction:'right',offset:[6,0],className:'gl'+(n.major?' gm':'')});
     mk.on('click',()=>{curSt=n.id;showStation(n.id);paint()});
   });
-  GEO.partial=!(H&&H.coords)||miss>5;GEO.drawn=true;
+  GEO.partial=!(H&&H.coords)||miss>5;GEO.drawn=true;GEO.real=!!GEOM;
   const note=document.getElementById('note');
-  if(GEO.on)note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles (lance « Mise à jour des horaires »)':'Tracé d\'après les coordonnées GPS des gares';
+  if(GEO.on)note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles (lance « Mise à jour des horaires »)':GEOM?'Tracé d\'après les voies réelles (OpenStreetMap)':'Tracé simplifié entre gares (voies réelles : lance « Tracé des voies »)';
 }
 function geoFit(){
   if(!GEO.map)return;
@@ -2109,15 +2175,17 @@ function applyView(){
     if(!GEO.map)geoInit();
     g.style.display='block';GEO.on=true;svg.style.visibility='hidden';
     geoSetBase(v);GEO.map.invalidateSize();
-    if(!GEO.drawn)drawGeo();else note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles':'Tracé d\'après les coordonnées GPS des gares';
+    geomLoad();
+    if(!GEO.drawn)drawGeo();else note.textContent=GEO.partial?'Tracé simplifié : coordonnées partielles':GEOM?'Tracé d\'après les voies réelles (OpenStreetMap)':'Tracé simplifié entre gares';
     if(!GEO.fitted)geoFit();
     geoStyle();trnTick();
   },()=>{SET.view='schema';saveSet();applyView();note.textContent='Carte indisponible (hors connexion ?) : retour au schéma'});
 }
 function geoPathBetween(a,b,typ){
   const k=a+'|'+b+'|'+(isTgv(typ)?1:0);GPC[k]||(()=>{
-    const ids=pathBetween(a,b,typ).ids.filter(id=>N[id]&&N[id].t===1);let pts=ids.map(geoXY).filter(Boolean);
-    const A=geoXY(a),B=geoXY(b);if(A&&(!pts.length||pts[0]!==A))pts.unshift(A);if(B&&pts[pts.length-1]!==B)pts.push(B);
+    const ids=pathBetween(a,b,typ).ids.filter(id=>N[id]&&N[id].t===1),fl=isTgv(typ)?'h':'c';let pts=[];
+    for(let q=1;q<ids.length;q++){const sg=geoSeg(ids[q-1],ids[q],fl);if(!sg)continue;pts=pts.length?pts.concat(sg.slice(1)):sg.slice()}
+    const A=geoXY(a),B=geoXY(b);if(!pts.length){if(A)pts.push(A);if(B)pts.push(B)}
     const cum=[0];for(let i=1;i<pts.length;i++){const la=(pts[i][0]+pts[i-1][0])/2*Math.PI/180;cum.push(cum[i-1]+Math.hypot((pts[i][1]-pts[i-1][1])*Math.cos(la),pts[i][0]-pts[i-1][0]))}
     GPC[k]={pts,cum,total:cum[cum.length-1]||1};
   })();
