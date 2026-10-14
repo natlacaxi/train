@@ -3,7 +3,7 @@
    - Icônes et bibliothèque de carte : cache d'abord.
    - Fonds de carte (tuiles) et autres sites : laissés au navigateur.
    Pour forcer la mise à jour chez tout le monde, change le numéro de VERSION ci-dessous. */
-const VERSION = 'v29';
+const VERSION = 'v30';
 const STATIC = 'ter-static-' + VERSION;
 const DATA = 'ter-data-' + VERSION;
 
@@ -21,7 +21,7 @@ const PRECACHE = [
   'apple-touch-icon.png'
 ];
 
-const isData = (url) => /\/(horaires-paca|horaires-france|stops-france|incidents)\.json$/.test(url.pathname);
+const isData = (url) => /\/(horaires-paca|horaires-france|stops-france|incidents|geom-lignes)\.json$/.test(url.pathname);
 const isPage = (req, url) => req.mode === 'navigate' || /\/(index\.html)?$/.test(url.pathname) || /manifest\.webmanifest$/.test(url.pathname);
 
 self.addEventListener('install', (e) => {
@@ -79,4 +79,3 @@ self.addEventListener('fetch', (e) => {
   // bibliothèque de carte (Leaflet) : cache d'abord ; tuiles et autres sites : réseau direct
   if (url.hostname === 'cdnjs.cloudflare.com') e.respondWith(cacheFirst(req, STATIC));
 });
-    
