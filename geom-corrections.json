@@ -1,0 +1,8 @@
+{
+  "_aide": "gares = remplace les coordonnées d'une gare pour build_geometrie.py (corrige aussi le plan du site) ; voies = point exact SUR la bonne voie (la gare garde ses coordonnées). Les clés qui commencent par _ sont ignorées.",
+  "gares": {
+    "luc": [43.3902379, 6.3430972],
+    "ent": [44.0054278, 4.9226971]
+  },
+  "voies": {}
+}
