@@ -1,4 +1,4 @@
-# Crée .github/workflows/geometrie.yml
+# .github/workflows/geometrie.yml
 name: Tracé des voies (OpenStreetMap)
 
 on:
@@ -26,8 +26,28 @@ jobs:
         run: |
           test -f geom-paires.json || { echo "ERREUR : geom-paires.json manquant à la racine du dépôt."; exit 1; }
           test -f build_geometrie.py || { echo "ERREUR : build_geometrie.py manquant à la racine du dépôt."; exit 1; }
+      - name: Restaure le cache des tuiles
+        uses: actions/cache/restore@v4
+        with:
+          path: .tuiles
+          key: tuiles-${{ github.run_id }}
+          restore-keys: tuiles-
       - name: Télécharge les voies OpenStreetMap et calcule les tracés
-        run: python build_geometrie.py --paires geom-paires.json --out geom-lignes.json --cache .tuiles
+        id: calc
+        continue-on-error: true
+        run: python build_geometrie.py --paires geom-paires.json --out geom-lignes.json --cache .tuiles --max-minutes 100 --tol 2
+      - name: Sauvegarde le cache des tuiles
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .tuiles
+          key: tuiles-${{ github.run_id }}
+      - name: Incomplet, à relancer
+        if: steps.calc.outcome == 'failure'
+        run: |
+          echo "Le calcul s'est arrêté (voir les logs de l'étape précédente)."
+          echo "Si c'est « temps écoulé » ou « tuile(s) manquante(s) » : relance le workflow, il reprendra avec les tuiles déjà en cache."
+          exit 1
       - name: Vérifie le résultat
         run: |
           test -s geom-lignes.json || { echo "geom-lignes.json vide"; exit 1; }
