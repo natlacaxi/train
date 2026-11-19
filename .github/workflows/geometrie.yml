@@ -3,11 +3,17 @@ name: Tracé des voies (OpenStreetMap)
 
 on:
   schedule:
-    - cron: "17 3 1 * *"      # une fois par mois (les voies ne changent presque jamais)
-  workflow_dispatch:          # bouton « Run workflow » : à lancer UNE FOIS à l'installation
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+    inputs:
+      essai:
+        description: "Numéro de l'essai (ne pas toucher)"
+        required: false
+        default: "0"
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: maj-donnees
@@ -22,36 +28,52 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Vérifie les fichiers
         run: |
           test -f geom-paires.json || { echo "ERREUR : geom-paires.json manquant à la racine du dépôt."; exit 1; }
           test -f build_geometrie.py || { echo "ERREUR : build_geometrie.py manquant à la racine du dépôt."; exit 1; }
+
       - name: Restaure le cache des tuiles
         uses: actions/cache/restore@v4
         with:
           path: .tuiles
-          key: tuiles-${{ github.run_id }}
+          key: tuiles-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: tuiles-
+
       - name: Télécharge les voies OpenStreetMap et calcule les tracés
         id: calc
         continue-on-error: true
         run: python build_geometrie.py --paires geom-paires.json --out geom-lignes.json --cache .tuiles --max-minutes 100 --tol 2
+
       - name: Sauvegarde le cache des tuiles
         if: always()
         uses: actions/cache/save@v4
         with:
           path: .tuiles
-          key: tuiles-${{ github.run_id }}
-      - name: Incomplet, à relancer
+          key: tuiles-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Incomplet, relance automatique
         if: steps.calc.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ESSAI: ${{ inputs.essai || '0' }}
         run: |
-          echo "Le calcul s'est arrêté (voir les logs de l'étape précédente)."
-          echo "Si c'est « temps écoulé » ou « tuile(s) manquante(s) » : relance le workflow, il reprendra avec les tuiles déjà en cache."
+          echo "Le calcul s'est arrêté (voir les logs de l'étape de calcul)."
+          if [ "$ESSAI" -lt 6 ]; then
+            NEXT=$((ESSAI + 1))
+            echo "Relance automatique : essai $NEXT/6 (reprise avec les tuiles en cache)."
+            gh workflow run geometrie.yml --ref "${GITHUB_REF_NAME}" -f essai="$NEXT"
+          else
+            echo "6 essais atteints : regarde les logs de l'étape de calcul."
+          fi
           exit 1
+
       - name: Vérifie le résultat
         run: |
           test -s geom-lignes.json || { echo "geom-lignes.json vide"; exit 1; }
           ls -lh geom-lignes.json
+
       - name: Enregistre dans le dépôt
         run: |
           git config user.name  "github-actions"
